@@ -1,0 +1,4 @@
+# konumumyemek.com · Railway & Docker Production Dependencies
+supabase==2.10.0
+httpx==0.27.2
+python-dotenv==1.0.1

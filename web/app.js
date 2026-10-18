@@ -577,13 +577,37 @@ function findRestaurantByEmail(identifier) {
   return null;
 }
 
+function formatTrIban(raw) {
+  let clean = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (clean && !clean.startsWith("TR")) {
+    clean = "TR" + clean.replace(/^[A-Z]+/, "");
+  }
+  if (clean.startsWith("TR")) {
+    clean = "TR" + clean.slice(2).replace(/\D/g, "");
+  }
+  clean = clean.slice(0, 26);
+  return clean.replace(/(.{4})/g, "$1 ").trim();
+}
+
+function isValidTrIban(raw) {
+  const clean = String(raw || "").toUpperCase().replace(/\s+/g, "");
+  return /^TR\d{24}$/.test(clean);
+}
+
+function isValidTaxOrTckn(raw) {
+  const digits = String(raw || "").replace(/\D/g, "");
+  return digits.length === 10 || digits.length === 11;
+}
+
 function resetRegisterForm() {
-  ["regBranchTitle", "regOfficialTitle", "regEmail", "regPhone", "regPassword", "regPassword2", "regCuisine", "regAddress"].forEach((id) => {
+  ["regBranchTitle", "regOfficialTitle", "regTaxOffice", "regTaxNumber", "regIban", "regEmail", "regPhone", "regPassword", "regPassword2", "regCuisine", "regAddress"].forEach((id) => {
     const el = $(id);
     if (el) el.value = "";
   });
   if ($("regHours")) $("regHours").value = "09:00-23:00";
   if ($("regKvkkOk")) $("regKvkkOk").checked = true;
+  if ($("regMerchantContractOk")) $("regMerchantContractOk").checked = true;
+  if ($("regFoodSafetyOk")) $("regFoodSafetyOk").checked = true;
   if ($("regErr")) $("regErr").textContent = "";
   if ($("regOk")) $("regOk").textContent = "";
 }
@@ -636,6 +660,16 @@ function bindStaffChips() {
   }
   const regBtn = $("registerBtn");
   if (regBtn) regBtn.onclick = tryRegister;
+  if ($("regIban")) {
+    $("regIban").oninput = (e) => {
+      e.target.value = formatTrIban(e.target.value);
+    };
+  }
+  if ($("regTaxNumber")) {
+    $("regTaxNumber").oninput = (e) => {
+      e.target.value = String(e.target.value || "").replace(/\D/g, "").slice(0, 11);
+    };
+  }
 }
 
 function switchBranch(id, persistSession = true) {
@@ -715,12 +749,15 @@ async function tryRegister() {
   if (errEl) errEl.textContent = "";
   if (okEl) okEl.textContent = "";
 
-  if (!$("regKvkkOk")?.checked) {
-    if (errEl) errEl.textContent = "Devam için işletme üyelik sözleşmesi ve KVKK onayı gerekli.";
+  if (!$("regKvkkOk")?.checked || !$("regMerchantContractOk")?.checked || !$("regFoodSafetyOk")?.checked) {
+    if (errEl) errEl.textContent = "Devam için KVKK Aydınlatma, Üye İşyeri & IBAN Hakediş Sözleşmesi ve Gıda Güvenliği beyanlarının tamamını onaylamanız zorunludur.";
     return;
   }
   const branchTitle = String($("regBranchTitle")?.value || "").trim();
-  const officialTitle = String($("regOfficialTitle")?.value || "").trim() || branchTitle;
+  const officialTitle = String($("regOfficialTitle")?.value || "").trim();
+  const taxOffice = String($("regTaxOffice")?.value || "").trim();
+  const taxNumber = String($("regTaxNumber")?.value || "").replace(/\D/g, "").trim();
+  const iban = formatTrIban($("regIban")?.value || "");
   const email = String($("regEmail")?.value || "").trim().toLowerCase();
   const phone = String($("regPhone")?.value || "").trim();
   const password = String($("regPassword")?.value || "").trim();
@@ -729,8 +766,16 @@ async function tryRegister() {
   const hours = String($("regHours")?.value || "").trim() || "09:00-23:00";
   const address = String($("regAddress")?.value || "").trim();
 
-  if (!branchTitle || !email || !password) {
-    if (errEl) errEl.textContent = "Lütfen Restoran/Şube Adı, Kurumsal E-posta ve Şifre alanlarını doldurun.";
+  if (!branchTitle || !officialTitle || !email || !phone || !password || !address) {
+    if (errEl) errEl.textContent = "Lütfen Şube Adı, Resmi Ticari Ünvan, Kurumsal E-posta, Telefon, Şifre ve Açık Adres alanlarını eksiksiz doldurun.";
+    return;
+  }
+  if (!taxOffice || !isValidTaxOrTckn(taxNumber)) {
+    if (errEl) errEl.textContent = "Lütfen Vergi Dairesi ve geçerli bir Vergi Kimlik No (10 hane) veya TCKN (11 hane) girin.";
+    return;
+  }
+  if (!isValidTrIban(iban)) {
+    if (errEl) errEl.textContent = "Lütfen hakediş ödemeleri için TR ile başlayan 26 haneli geçerli bir banka IBAN numarası girin.";
     return;
   }
   if (password.length < 4) {
@@ -764,10 +809,11 @@ async function tryRegister() {
     branchTitle,
     email,
     password,
-    phone: phone || (existing && existing.phone) || "",
-    taxNumber: (existing && existing.taxNumber) || "",
-    iban: (existing && existing.iban) || "",
-    address: address || (existing && existing.address) || "",
+    phone,
+    taxOffice,
+    taxNumber,
+    iban,
+    address,
     cuisine,
     hours,
     open: true,
@@ -777,6 +823,9 @@ async function tryRegister() {
     logoFg: (existing && existing.logoFg) || "#0B0F19",
     latitude: Number((existing && existing.latitude) || 41.3320),
     longitude: Number((existing && existing.longitude) || 36.2730),
+    kvkkApprovedAt: new Date().toISOString(),
+    merchantContractApprovedAt: new Date().toISOString(),
+    foodSafetyApprovedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
 
@@ -1399,7 +1448,7 @@ function renderLiveList() {
       </div>
       <div style="color:${col};font-weight:800;text-align:right">📍 ${esc(formatDistanceEta(order.meters))}</div>
     </div>`;
-  }).join("") || "<p class='note' style='margin-top:10px'>Şu an yaklaşan aktif araç yok. iOS uygulamasından sipariş verildiğinde burada canlı görünür.</p>";
+  }).join("") || "<p class='note' style='margin-top:10px'>Şu an yaklaşan aktif araç yok. Mobil uygulamadan sipariş verildiğinde burada canlı görünür.</p>";
 }
 
 function draw() {
@@ -1516,7 +1565,7 @@ function renderMenu() {
   const dishes = menuOf(session);
   $("menuPane").innerHTML = `<div class="card">
     <h2>Menü & Stok Yönetimi (86)</h2>
-    <p class="note">Burada yapılan kategori, fiyat, varyasyon ve 86 (Tükendi) değişiklikleri anında iOS müşteri uygulamasında güncellenir.</p>
+    <p class="note">Burada yapılan kategori, fiyat, varyasyon ve 86 (Tükendi) değişiklikleri anında mobil müşteri uygulamasında güncellenir.</p>
     <div id="dishList">${dishes.map((d, i) =>
       `<div class="menu-card">
         <div class="dish">
@@ -1561,7 +1610,7 @@ function renderMenu() {
       <div><label>İKON / GÖRSEL</label><input id="dishPhoto" maxlength="4" placeholder="🍔" /></div>
     </div>
     <div class="emoji-pick" id="newPhoto">${PHOTOS.map((p) => `<button data-newp="${p}">${p}</button>`).join("")}</div>
-    <button class="primary" id="addDish">Menüye Ekle ve iOS'a Yayınla</button>
+    <button class="primary" id="addDish">Menüye Ekle ve Mobil Uygulamaya Yayınla</button>
     <div class="ok" id="menuMsg"></div>
   </div>`;
   $("addDish").onclick = addDish;
@@ -1651,7 +1700,7 @@ function addDish() {
   publishMenu();
   renderMenu();
   const msg = $("menuMsg");
-  if (msg) msg.textContent = "Yeni ürün menüye eklendi ve iOS uygulamasına yayınlandı.";
+  if (msg) msg.textContent = "Yeni ürün menüye eklendi ve mobil uygulamaya yayınlandı.";
 }
 
 function removeDish(index) {
@@ -1674,7 +1723,7 @@ function renderCampaigns() {
   const myCampaigns = (runtime.campaigns || []).filter((c) => c.restaurantId === session.id);
   $("campaignsPane").innerHTML = `<div class="card">
     <h2>Restoran Kampanyaları · ${esc(session.branchTitle)}</h2>
-    <p class="note">Yalnızca kendi işletmenize ait kampanyaları görür ve yönetirsiniz. Eklediğiniz kampanyalar iOS mobil uygulamasında yayınlanır.</p>
+    <p class="note">Yalnızca kendi işletmenize ait kampanyaları görür ve yönetirsiniz. Eklediğiniz kampanyalar mobil uygulamada yayınlanır.</p>
     ${myCampaigns.map((c) =>
       `<div class="row" style="align-items:center">
         <div>
@@ -1759,13 +1808,14 @@ function renderProfile() {
       </div>
     </div>
     <div class="grid2">
-      <div><label>TİCARİ UNVAN</label><input id="pTitle" value="${esc(p.officialTitle || "")}" /></div>
+      <div><label>RESMİ TİCARİ UNVAN (FATURA / HAKEDİŞ)</label><input id="pTitle" value="${esc(p.officialTitle || "")}" placeholder="Örn: Lezzet Gıda İşletmeleri A.Ş." /></div>
       <div><label>ŞUBE ADI</label><input id="pBranch" value="${esc(p.branchTitle || "")}" /></div>
+      <div><label>VERGİ DAİRESİ</label><input id="pTaxOffice" value="${esc(p.taxOffice || "")}" placeholder="Örn: 19 Mayıs V.D. / Gaziler V.D." /></div>
+      <div><label>VERGİ KİMLİK NO (VKN 10 / TCKN 11 HANE)</label><input id="pTax" maxlength="11" inputmode="numeric" value="${esc(p.taxNumber || "")}" placeholder="10 haneli VKN veya 11 haneli TCKN" /></div>
+      <div style="grid-column:1 / -1"><label>HAKEDİŞ BANKA IBAN (TR · 26 KARAKTER)</label><input id="pIban" maxlength="32" value="${esc(formatTrIban(p.iban || ""))}" placeholder="TR00 0000 0000 0000 0000 0000 00" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.6px" /></div>
       <div><label>KURUMSAL E-POSTA</label><input id="pEmail" value="${esc(p.email || "")}" /></div>
       <div><label>PANEL ŞİFRESİ</label><input id="pPass" type="password" value="${esc(p.password || "")}" /></div>
       <div><label>ŞUBE TELEFONU</label><input id="pPhone" value="${esc(p.phone || "")}" /></div>
-      <div><label>VERGİ KİMLİK NO</label><input id="pTax" value="${esc(p.taxNumber || "")}" /></div>
-      <div><label>HAKEDİŞ IBAN</label><input id="pIban" value="${esc(p.iban || "")}" /></div>
       <div><label>AÇIK ADRES (TESLİM NOKTASI)</label><input id="pAddr" value="${esc(p.address || "")}" /></div>
       <div><label>MUTFAK KATEGORİSİ</label><input id="pCuisine" value="${esc(p.cuisine || session.cuisine || "")}" placeholder="Burger, Döner, Pizza" /></div>
       <div>
@@ -1786,8 +1836,8 @@ function renderProfile() {
         </div>
       </div>
     </div>
-    <h3 style="margin-top:18px">Restoran Logosu (iOS Uygulama Vitrini)</h3>
-    <p class="note">Bu logo iOS müşteri uygulamasındaki restoran seçim ekranında görünür.</p>
+    <h3 style="margin-top:18px">Restoran Logosu (Mobil Uygulama Vitrini)</h3>
+    <p class="note">Bu logo mobil müşteri uygulamasındaki restoran seçim ekranında görünür.</p>
     <div class="logo-edit">
       <div class="logo" id="logoPreview" style="background:${esc(p.logoBg || session.logoBg || "#3AF1D7")};color:${esc(p.logoFg || session.logoFg || "#0B0F19")}">${esc(p.logoMark || session.logoMark || "M")}</div>
       <div class="grid2" style="flex:1">
@@ -1798,8 +1848,58 @@ function renderProfile() {
     </div>
     <button class="primary" id="saveProf">İşletme Bilgilerini Kaydet</button>
     <div class="ok" id="profMsg"></div>
+
+    <div style="margin-top:26px;padding:16px;border-radius:14px;background:rgba(255,66,114,.06);border:1px solid rgba(255,66,114,.45)">
+      <h3 style="margin:0 0 6px 0;color:#FF4272">Tehlikeli Bölge · Mağaza / İşletme Hesabını Kalıcı Olarak Sil</h3>
+      <p class="note" style="margin:0 0 12px 0">
+        6698 sayılı KVKK m.7 ve 6563 sayılı ETK kapsamında mağaza üyeliğinizi sonlandırabilirsiniz. Bu işlem mağaza profilinizi, menünüzü, kampanyalarınızı ve mobil uygulamadaki vitrin kaydınızı bulut sunucularımızdan <b>kalıcı olarak siler</b>.
+      </p>
+      <button type="button" class="ghost" id="btnShowDeleteStore" style="border-color:rgba(255,66,114,.85);color:#FF4272;font-weight:800">
+        🗑️ Mağazamı ve İşletme Hesabımı Kalıcı Olarak Sil
+      </button>
+      <div id="deleteStoreConfirmBox" class="hidden" style="margin-top:12px;padding:14px;border-radius:12px;background:rgba(11,15,25,.85);border:1px solid rgba(255,66,114,.7)">
+        <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#FF4272">
+          ⚠️ DİKKAT: "${esc(p.branchTitle || session.branchTitle)}" mağazası, tüm menü ürünleri ve bulut kaydı kalıcı olarak silinecek ve mobil uygulamadan kaldırılacaktır. Onaylamak için aşağıya şube şifrenizi girin:
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input id="delStorePass" type="password" placeholder="Panel şifrenizi girin" style="flex:1;min-width:200px;margin:0" />
+          <button type="button" class="stop" id="btnConfirmDeleteStore" style="width:auto;margin:0;padding:0 16px;height:42px;background:#FF4272;color:#0B0F19;font-weight:800;border:none;border-radius:10px;cursor:pointer">
+            Kalıcı Olarak Sil ve Kapat
+          </button>
+          <button type="button" class="ghost" id="btnCancelDeleteStore" style="width:auto;margin:0;padding:0 14px;height:42px">
+            Vazgeç
+          </button>
+        </div>
+        <div class="err" id="delStoreErr" style="margin-top:8px"></div>
+      </div>
+    </div>
   </div>`;
   $("saveProf").onclick = saveProfile;
+  if ($("pIban")) {
+    $("pIban").oninput = (e) => {
+      e.target.value = formatTrIban(e.target.value);
+    };
+  }
+  if ($("pTax")) {
+    $("pTax").oninput = (e) => {
+      e.target.value = String(e.target.value || "").replace(/\D/g, "").slice(0, 11);
+    };
+  }
+  if ($("btnShowDeleteStore")) {
+    $("btnShowDeleteStore").onclick = () => {
+      $("deleteStoreConfirmBox")?.classList.remove("hidden");
+      $("delStorePass")?.focus();
+    };
+  }
+  if ($("btnCancelDeleteStore")) {
+    $("btnCancelDeleteStore").onclick = () => {
+      $("deleteStoreConfirmBox")?.classList.add("hidden");
+      if ($("delStoreErr")) $("delStoreErr").textContent = "";
+    };
+  }
+  if ($("btnConfirmDeleteStore")) {
+    $("btnConfirmDeleteStore").onclick = deleteStorePermanently;
+  }
   const syncHoursInputs = () => {
     const o = $("pOpenTime")?.value;
     const c = $("pCloseTime")?.value;
@@ -1858,14 +1958,28 @@ function renderProfile() {
 async function saveProfile() {
   const latVal = parseFloat($("pLat")?.value);
   const lngVal = parseFloat($("pLng")?.value);
+  const taxOfficeVal = String($("pTaxOffice")?.value || "").trim();
+  const taxVal = String($("pTax")?.value || "").replace(/\D/g, "").trim();
+  const ibanVal = formatTrIban($("pIban")?.value || "");
+  if (taxVal && !isValidTaxOrTckn(taxVal)) {
+    $("profMsg").className = "err";
+    $("profMsg").textContent = "Vergi Kimlik No 10 haneli (VKN) veya 11 haneli (TCKN) olmalıdır.";
+    return;
+  }
+  if (ibanVal && !isValidTrIban(ibanVal)) {
+    $("profMsg").className = "err";
+    $("profMsg").textContent = "Lütfen TR ile başlayan 26 haneli geçerli bir IBAN girin.";
+    return;
+  }
   const next = {
     officialTitle: $("pTitle").value.trim(),
     branchTitle: $("pBranch").value.trim(),
     email: $("pEmail").value.trim(),
     password: $("pPass").value,
     phone: $("pPhone").value.trim(),
-    taxNumber: $("pTax").value.trim(),
-    iban: $("pIban").value.trim(),
+    taxOffice: taxOfficeVal,
+    taxNumber: taxVal,
+    iban: ibanVal,
     address: $("pAddr").value.trim(),
     cuisine: $("pCuisine").value.trim(),
     hours: $("pHours").value.trim(),
@@ -1873,7 +1987,8 @@ async function saveProfile() {
     logoBg: $("pLogoBg").value.trim(),
     logoFg: $("pLogoFg").value.trim(),
     latitude: Number.isFinite(latVal) ? latVal : (session.latitude ?? 41.3320),
-    longitude: Number.isFinite(lngVal) ? lngVal : (session.longitude ?? 36.2730)
+    longitude: Number.isFinite(lngVal) ? lngVal : (session.longitude ?? 36.2730),
+    updatedAt: new Date().toISOString()
   };
   runtime.profiles[session.id] = Object.assign({}, runtime.profiles[session.id] || {}, next);
   Object.assign(session, next);
@@ -1881,7 +1996,62 @@ async function saveProfile() {
   storeSession();
   updateHeaderWho();
   $("profMsg").className = "ok";
-  $("profMsg").textContent = "İşletme bilgileri kaydedildi.";
+  $("profMsg").textContent = "İşletme, vergi ve IBAN bilgileri buluta kaydedildi.";
+}
+
+async function deleteStorePermanently() {
+  if (!session) return;
+  const errEl = $("delStoreErr");
+  if (errEl) errEl.textContent = "";
+  const enteredPass = String($("delStorePass")?.value || "").trim();
+  const actualPass = String((runtime.profiles?.[session.id]?.password) || session.password || "").trim();
+  if (!enteredPass || enteredPass !== actualPass) {
+    if (errEl) errEl.textContent = "Girilen şifre hatalı. Mağazayı silmek için mevcut panel şifrenizi doğru girmelisiniz.";
+    return;
+  }
+  const storeId = session.id;
+  const storeEmail = String(session.email || "").trim().toLowerCase();
+  const storeBayi = String(session.bayiKodu || "").trim().toLowerCase();
+
+  if (runtime.profiles) delete runtime.profiles[storeId];
+  if (runtime.menus) delete runtime.menus[storeId];
+  if (runtime.menuExtras) delete runtime.menuExtras[storeId];
+  if (Array.isArray(runtime.campaigns)) {
+    runtime.campaigns = runtime.campaigns.filter((c) => c.restaurantId !== storeId);
+  }
+  if (Array.isArray(runtime.orders)) {
+    runtime.orders = runtime.orders.filter((o) => o.restaurantId !== storeId);
+  }
+
+  const keysToDelete = [];
+  if (storeEmail) keysToDelete.push(`__state_account:${storeEmail}`);
+  if (storeBayi) keysToDelete.push(`__state_account:${storeBayi}`);
+
+  for (const k of keysToDelete) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(k)}`, {
+        method: "DELETE",
+        headers: supabaseHeaders("return=minimal")
+      });
+    } catch { /* ignore */ }
+  }
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/orders?restaurant_id=eq.${encodeURIComponent(storeId)}`, {
+      method: "DELETE",
+      headers: supabaseHeaders("return=minimal")
+    });
+    await fetch(`${SUPABASE_URL}/rest/v1/live_tracking?restaurant_id=eq.${encodeURIComponent(storeId)}`, {
+      method: "DELETE",
+      headers: supabaseHeaders("return=minimal")
+    });
+  } catch { /* ignore */ }
+
+  await persist(true);
+  doLogout();
+  if ($("err")) {
+    $("err").style.color = "#3AF1D7";
+    $("err").textContent = "Mağaza hesabınız, menünüz ve bulut verileriniz kalıcı olarak silindi.";
+  }
 }
 
 function todayKey(iso) {
@@ -1934,15 +2104,35 @@ function renderReports() {
 }
 
 function renderLegal() {
+  const p = Object.assign({}, session || {}, (session && runtime.profiles?.[session.id]) || {});
   $("legalPane").innerHTML = `<div class="card legal">
-    <h2>Restoran İşletme & KVKK Kuralları</h2>
-    <p class="note">konumumyemek.com tersine araç takip ve camdan teslim sistemi işletme metinleri.</p>
-    <h3>1. KVKK ve Plaka / Konum Verisi İşleme</h3>
-    <p>Müşterinin iOS uygulamasından verdiği siparişlerde araç plakası ve canlı yaklaşım mesafesi yalnızca siparişin hazırlanması ve araç camından doğru araca teslim edilmesi amacıyla mutfak ekranında (KDS) gösterilir. Teslimat ("Camdan Teslim") tamamlandığında canlı konum akışı otomatik olarak sonlanır.</p>
-    <h3>2. Mutfak Kabul ve İptal Standardı</h3>
-    <p>6502 sayılı kanun kapsamında anında tüketilmek üzere hazırlanan gıda ürünlerinde müşteri yalnızca sipariş "İletildi" aşamasındayken iptal yapabilir. Restoran siparişi "Mutfağa Al" olarak işaretledikten sonra üretim başlar.</p>
-    <h3>3. Yemek Kartları ve Hakediş</h3>
-    <p>Sodexo, Multinet, Setcard, Metropol Card ve Kredi Kartı ödemeleri iOS uygulaması üzerinden alınır; restoran net hakedişi Rapor sekmesinde anlık olarak takip edilir.</p>
+    <h2>Restoran Üye İşyeri Sözleşmesi, Hakediş/IBAN ve KVKK Yasal Standartları</h2>
+    <p class="note">konumumyemek.com tersine araç takip ve araç camından teslim (Drive-Thru / Curbside) platformu resmi hukuki metinleri.</p>
+
+    <div style="margin:12px 0 16px 0;padding:12px 14px;border-radius:12px;background:rgba(58,241,215,.06);border:1px solid rgba(58,241,215,.3);font-size:12px;line-height:1.6">
+      <b style="color:var(--neon)">Aktif Üye İşyeri Kayıt Özeti:</b><br/>
+      • <b>Ticari Unvan / Şube:</b> ${esc(p.officialTitle || p.branchTitle || "—")} (${esc(p.bayiKodu || "—")})<br/>
+      • <b>Vergi Dairesi &amp; VKN/TCKN:</b> ${esc(p.taxOffice || "Belirtilmedi")} / ${esc(p.taxNumber || "Belirtilmedi")}<br/>
+      • <b>Kayıtlı Hakediş IBAN:</b> <span style="font-family:ui-monospace,Menlo,monospace">${esc(p.iban || "Belirtilmedi (Restoran Profili sekmesinden güncelleyiniz)")}</span>
+    </div>
+
+    <h3>1. 6698 Sayılı KVKK Aydınlatma Metni ve Veri İşleyen / Veri Sorumlusu Protokolü</h3>
+    <p>Müşterinin mobil uygulamadan verdiği siparişlerde <b>araç plakası</b>, <b>ad-soyad/iletişim bilgisi</b> ve <b>canlı GPS yaklaşım mesafesi (metre / tahmini varış süresi)</b>, 6698 sayılı Kişisel Verilerin Korunması Kanunu m.5/2-c ("bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması") hukuki sebebine dayanarak yalnızca siparişin zamanında hazırlanması ve araç camından doğru araca teslim edilmesi amacıyla mutfak ekranında (KDS) gösterilir. Sipariş <b>"Camdan Teslim"</b> veya <b>"İptal"</b> statüsüne geçtiği anda canlı konum akışı otomatik olarak kesilir. Üye işyeri, plaka ve müşteri verilerini üçüncü kişilerle paylaşamaz veya pazarlama amacıyla kullanamaz.</p>
+
+    <h3>2. 6563 Sayılı ETK Kapsamında Aracı Hizmet Sağlayıcı &amp; Üye İşyeri Sözleşmesi</h3>
+    <p><b>konumumyemek.com</b>, 6563 sayılı Elektronik Ticaretin Düzenlenmesi Hakkında Kanun kapsamında "Aracı Hizmet Sağlayıcı" sıfatıyla hareket eder. Üye İşyeri (Restoran), platformda satışa sunduğu gıda ve içecek ürünlerinin fiyat, içerik, gramaj bilgilerinin doğruluğundan, e-Arşiv / ÖKC fiş düzenleme yükümlülüğünden ve 213 sayılı Vergi Usul Kanunu uyarınca vergisel sorumluluklardan bizzat sorumludur.</p>
+
+    <h3>3. 6493 Sayılı Kanun, Komisyon Oranı (%${Math.round(COMMISSION * 100)}) ve TR IBAN Hakediş Mutabakatı</h3>
+    <p>Mobil uygulama üzerinden Kredi Kartı, Dijital Cüzdan (Apple Pay / Google Pay) ve Yemek Kartları (Sodexo/Pluxee, Multinet, Setcard, Metropol Card, Ticket Edenred) ile tahsil edilen sipariş tutarlarından <b>%${Math.round(COMMISSION * 100)} platform hizmet komisyonu (KDV dahil)</b> düşüldükten sonra kalan <b>Net Restoran Hakedişi</b>, Üye İşyerinin bildirdiği 26 haneli <b>TR IBAN</b> hesabına aktarılır. MASAK ve 6493 sayılı Ödeme Hizmetleri Kanunu gereğince IBAN alıcı ünvanı ile kayıtlı Vergi Kimlik Numarası (VKN/TCKN) sahibi birebir aynı tüzel veya gerçek kişi olmak zorundadır.</p>
+
+    <h3>4. 6502 Sayılı TKHK &amp; Mesafeli Sözleşmeler Yönetmeliği m.15/1-c (İptal ve Cayma İstisnası)</h3>
+    <p>Mesafeli Sözleşmeler Yönetmeliği m.15/1-c uyarınca <i>"çabuk bozulabilen veya son kullanma tarihi geçebilecek malların teslimine ilişkin sözleşmelerde"</i> hazırlık başladıktan sonra cayma hakkı kullanılamaz. Müşteri yalnızca sipariş <b>"İletildi"</b> aşamasındayken uygulama üzerinden ücretsiz iptal yapabilir. Restoran siparişi KDS ekranında <b>"Mutfağa Al"</b> olarak onayladıktan sonra gıda üretimi başladığından müşteri kaynaklı iptal yapılamaz.</p>
+
+    <h3>5. 5996 Sayılı Gıda Güvenliği Kanunu, Alerjen ve Kalori Bildirimi</h3>
+    <p>Üye İşyeri, Türk Gıda Kodeksi Etiketleme ve Tüketicileri Bilgilendirme Yönetmeliği uyarınca menüsündeki ürünlerin alerjen bilgilerini (Glüten, Süt/Laktoz, Yumurta, Fıstık, Susam, Soya, Deniz Ürünü vb.) ve kalori değerlerini "Menü &amp; Stok (86)" sekmesinde doğru şekilde işaretlemekle ve tükenen ürünleri ("86 · Tükendi") anlık olarak kapatmakla yükümlüdür.</p>
+
+    <h3>6. KVKK m.7 &amp; m.11 Kapsamında Mağaza Kapatma ve Veri İmha Prosedürü</h3>
+    <p>Üye İşyeri dilediği zaman <b>Restoran Profili &gt; Mağazamı ve İşletme Hesabımı Kalıcı Olarak Sil</b> adımı üzerinden üyeliğini tek tıkla sonlandırabilir. Silme işlemi onaylandığında mağaza profili, menü, kampanya ve canlı takip kayıtları aktif bulut veritabanından derhal silinir ve mobil müşteri uygulamasından kaldırılır.</p>
   </div>`;
 }
 

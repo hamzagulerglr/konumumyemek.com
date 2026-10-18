@@ -1,0 +1,54 @@
+{
+  "orders": {
+    "path": "orders/{orderId}",
+    "fields": {
+      "id": "string",
+      "restaurantId": "string",
+      "driverName": "string",
+      "plate": "string",
+      "items": "string",
+      "payment": "string",
+      "latitude": "number",
+      "longitude": "number",
+      "meters": "number",
+      "status": "iletildi | kabul | hazir | yolda | kapıda | teslim | iptal",
+      "total": "number",
+      "lane": "A | B",
+      "stall": "1 | 2",
+      "speaker": "1 | 2",
+      "speakerMatched": "boolean",
+      "atDoor": "boolean",
+      "seenCar": "boolean",
+      "prepMinutes": "int",
+      "source": "ios | web | server",
+      "updatedAt": "iso-8601"
+    }
+  },
+  "menus": {
+    "path": "menus/{restaurantId}",
+    "document": {
+      "items": [{
+        "id": "string",
+        "name": "string",
+        "price": "int",
+        "photo": "emoji",
+        "photoBg": "hex",
+        "kcal": "int",
+        "allergens": ["string"],
+        "variations": [{ "id": "string", "name": "string", "priceDelta": "int" }],
+        "soldOut": "boolean",
+        "category": "Ana yemek | Yan | İçecek",
+        "stock": "int"
+      }]
+    }
+  },
+  "campaigns": {
+    "path": "campaigns/{campaignId}",
+    "fields": {
+      "id": "string",
+      "title": "string",
+      "detail": "string",
+      "active": "boolean"
+    }
+  }
+}

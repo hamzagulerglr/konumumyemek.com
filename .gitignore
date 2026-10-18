@@ -1,0 +1,8 @@
+.DS_Store
+.build/
+.preserve/
+.swiftpm/
+xcuserdata/
+*.xcuserstate
+DerivedData/
+web/data/keep.log

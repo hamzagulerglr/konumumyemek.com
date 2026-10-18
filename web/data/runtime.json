@@ -1,0 +1,151 @@
+{
+  "menuExtras": {
+    "mcd-samsun": [
+      {
+        "id": "web-1792008910172",
+        "name": "kuru fasulye",
+        "price": 120
+      },
+      {
+        "id": "web-1792008929456",
+        "name": "çay",
+        "price": 10
+      }
+    ]
+  },
+  "profiles": {
+    "mcd-samsun": {
+      "open": true,
+      "busy": "mid",
+      "paused": false
+    }
+  },
+  "campaigns": [
+    {
+      "id": "c1",
+      "title": "Drive-Thru ₺50 indirim",
+      "detail": "Tersine takip siparişinde ₺50",
+      "active": true
+    },
+    {
+      "id": "c2",
+      "title": "Termos kampanyası",
+      "detail": "Çay + termos birlikte ₺55",
+      "active": true
+    }
+  ],
+  "orders": [],
+  "menus": {
+    "mcd-samsun": [
+      {
+        "id": "mcd-bigmac",
+        "name": "Big Mac",
+        "price": 215,
+        "photo": "🍔",
+        "photoBg": "#7a2410",
+        "kcal": 563,
+        "allergens": [
+          "Gluten",
+          "Süt",
+          "Susam"
+        ],
+        "variations": [
+          {
+            "id": "std",
+            "name": "Standart",
+            "priceDelta": 0
+          },
+          {
+            "id": "dbl",
+            "name": "Double Köfte",
+            "priceDelta": 65
+          },
+          {
+            "id": "menu",
+            "name": "Büyük Seçim Menü",
+            "priceDelta": 55
+          }
+        ],
+        "soldOut": false,
+        "category": "Ana yemek",
+        "stock": 25
+      },
+      {
+        "id": "mcd-mcchicken",
+        "name": "McChicken",
+        "price": 195,
+        "photo": "🍗",
+        "photoBg": "#6b3e0e",
+        "kcal": 480,
+        "allergens": [
+          "Gluten",
+          "Yumurta",
+          "Susam"
+        ],
+        "variations": [
+          {
+            "id": "std",
+            "name": "Standart",
+            "priceDelta": 0
+          },
+          {
+            "id": "spicy",
+            "name": "Acılı Sos",
+            "priceDelta": 15
+          }
+        ],
+        "soldOut": false,
+        "category": "Ana yemek",
+        "stock": 25
+      },
+      {
+        "id": "mcd-fries",
+        "name": "Büyük Boy Patates",
+        "price": 85,
+        "photo": "🍟",
+        "photoBg": "#78530d",
+        "kcal": 434,
+        "allergens": [],
+        "variations": [
+          {
+            "id": "std",
+            "name": "Büyük",
+            "priceDelta": 0
+          },
+          {
+            "id": "sallama",
+            "name": "Cheddar Soslu",
+            "priceDelta": 30
+          }
+        ],
+        "soldOut": false,
+        "category": "Yan",
+        "stock": 25
+      },
+      {
+        "id": "mcd-cola",
+        "name": "Coca-Cola",
+        "price": 65,
+        "photo": "🥤",
+        "photoBg": "#5b1118",
+        "kcal": 140,
+        "allergens": [],
+        "variations": [
+          {
+            "id": "std",
+            "name": "Orta Boy",
+            "priceDelta": 0
+          },
+          {
+            "id": "zero",
+            "name": "Zero Sugar",
+            "priceDelta": 0
+          }
+        ],
+        "soldOut": false,
+        "category": "İçecek",
+        "stock": 25
+      }
+    ]
+  }
+}

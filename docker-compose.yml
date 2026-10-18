@@ -1,0 +1,19 @@
+services:
+  konumum-cloud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: konumum-cloud
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8765}:8765"
+    environment:
+      - PORT=8765
+      - SUPABASE_URL=${SUPABASE_URL:-https://hetcihydnkgbuglsuzcs.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-sb_publishable_Xh8V52jmvs1JFpKX7v8SuA_SFk1DA0Z}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8765/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

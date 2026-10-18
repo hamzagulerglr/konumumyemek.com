@@ -1,0 +1,390 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A20000000000000000000001 /* LumenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* LumenApp.swift */; };
+		A20000000000000000000002 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000002 /* RootView.swift */; };
+		A20000000000000000000003 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000003 /* SidebarView.swift */; };
+		A20000000000000000000004 /* TimerStageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000004 /* TimerStageView.swift */; };
+		A20000000000000000000005 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000005 /* SettingsView.swift */; };
+		A20000000000000000000006 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000006 /* MenuBarView.swift */; };
+		A20000000000000000000007 /* FocusTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000007 /* FocusTimer.swift */; };
+		A20000000000000000000008 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000008 /* SessionStore.swift */; };
+		A20000000000000000000009 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000009 /* Models.swift */; };
+		A2000000000000000000000A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000A /* Theme.swift */; };
+		A2000000000000000000000C /* Atmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000D /* Atmosphere.swift */; };
+		A2000000000000000000000D /* PlateRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000E /* PlateRegistrationView.swift */; };
+		A20000000000000000000011 /* OrderPaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000011 /* OrderPaymentView.swift */; };
+		A20000000000000000000012 /* CarConsoleNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000012 /* CarConsoleNavigationView.swift */; };
+		A20000000000000000000013 /* RestaurantKitchenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000013 /* RestaurantKitchenView.swift */; };
+		A2000000000000000000001C /* WebPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001C /* WebPanelView.swift */; };
+		A2000000000000000000001D /* KonumumDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001D /* KonumumDirectory.swift */; };
+		A2000000000000000000001E /* SürücüNavigasyonCarPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001E /* SürücüNavigasyonCarPlayView.swift */; };
+		A2000000000000000000001F /* KonumumMemberTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001F /* KonumumMemberTabs.swift */; };
+		A20000000000000000000020 /* RestaurantSellerDeskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000020 /* RestaurantSellerDeskView.swift */; };
+		A20000000000000000000021 /* KonumumWebMenuStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000021 /* KonumumWebMenuStore.swift */; };
+		A20000000000000000000022 /* KonumumLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000022 /* KonumumLocation.swift */; };
+		A20000000000000000000023 /* KonumumCarPlaySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000023 /* KonumumCarPlaySupport.swift */; };
+		A2000000000000000000000E /* JetBrainsMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000F /* JetBrainsMono-Medium.ttf */; };
+		A2000000000000000000000F /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000010 /* OFL.txt */; };
+		A2000000000000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000B /* Assets.xcassets */; };
+		A20000000000000000000015 /* KonumumLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000015 /* KonumumLogo.png */; };
+		A20000000000000000000016 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000016 /* AppIcon60x60@2x.png */; };
+		A20000000000000000000017 /* AppIcon60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000017 /* AppIcon60x60@3x.png */; };
+		A20000000000000000000018 /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000018 /* AppIcon40x40@2x.png */; };
+		A20000000000000000000019 /* AppIcon40x40@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000019 /* AppIcon40x40@3x.png */; };
+		A2000000000000000000001A /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001A /* AppIcon29x29@2x.png */; };
+		A2000000000000000000001B /* AppIcon29x29@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000001B /* AppIcon29x29@3x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000005 /* Lumen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lumen.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A30000000000000000000001 /* LumenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumenApp.swift; sourceTree = "<group>"; };
+		A30000000000000000000002 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A30000000000000000000003 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		A30000000000000000000004 /* TimerStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStageView.swift; sourceTree = "<group>"; };
+		A30000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A30000000000000000000006 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		A30000000000000000000007 /* FocusTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTimer.swift; sourceTree = "<group>"; };
+		A30000000000000000000008 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		A30000000000000000000009 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A3000000000000000000000A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A3000000000000000000000D /* Atmosphere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atmosphere.swift; sourceTree = "<group>"; };
+		A3000000000000000000000E /* PlateRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateRegistrationView.swift; sourceTree = "<group>"; };
+		A30000000000000000000011 /* OrderPaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderPaymentView.swift; sourceTree = "<group>"; };
+		A30000000000000000000012 /* CarConsoleNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarConsoleNavigationView.swift; sourceTree = "<group>"; };
+		A30000000000000000000013 /* RestaurantKitchenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantKitchenView.swift; sourceTree = "<group>"; };
+		A3000000000000000000001C /* WebPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPanelView.swift; sourceTree = "<group>"; };
+		A3000000000000000000001D /* KonumumDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonumumDirectory.swift; sourceTree = "<group>"; };
+		A3000000000000000000001E /* SürücüNavigasyonCarPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SürücüNavigasyonCarPlayView.swift"; sourceTree = "<group>"; };
+		A3000000000000000000001F /* KonumumMemberTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonumumMemberTabs.swift; sourceTree = "<group>"; };
+		A30000000000000000000020 /* RestaurantSellerDeskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantSellerDeskView.swift; sourceTree = "<group>"; };
+		A30000000000000000000021 /* KonumumWebMenuStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonumumWebMenuStore.swift; sourceTree = "<group>"; };
+		A30000000000000000000022 /* KonumumLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonumumLocation.swift; sourceTree = "<group>"; };
+		A30000000000000000000023 /* KonumumCarPlaySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KonumumCarPlaySupport.swift; sourceTree = "<group>"; };
+		A3000000000000000000000F /* JetBrainsMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Fonts/JetBrainsMono-Medium.ttf"; sourceTree = "<group>"; };
+		A30000000000000000000010 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Fonts/OFL.txt"; sourceTree = "<group>"; };
+		A3000000000000000000000B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A3000000000000000000000C /* Lumen.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Lumen.entitlements; sourceTree = "<group>"; };
+		A30000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A30000000000000000000015 /* KonumumLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KonumumLogo.png; sourceTree = "<group>"; };
+		A30000000000000000000016 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		A30000000000000000000017 /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
+		A30000000000000000000018 /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@2x.png"; sourceTree = "<group>"; };
+		A30000000000000000000019 /* AppIcon40x40@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@3x.png"; sourceTree = "<group>"; };
+		A3000000000000000000001A /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon29x29@2x.png"; sourceTree = "<group>"; };
+		A3000000000000000000001B /* AppIcon29x29@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon29x29@3x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000000000000000000002 /* = */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000004 /* Lumen */,
+				A10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+			name = Lumen;
+		};
+		A10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000005 /* Lumen.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000004 /* Lumen */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* LumenApp.swift */,
+				A30000000000000000000002 /* RootView.swift */,
+				A30000000000000000000003 /* SidebarView.swift */,
+				A30000000000000000000004 /* TimerStageView.swift */,
+				A30000000000000000000005 /* SettingsView.swift */,
+				A30000000000000000000006 /* MenuBarView.swift */,
+				A30000000000000000000007 /* FocusTimer.swift */,
+				A30000000000000000000008 /* SessionStore.swift */,
+				A30000000000000000000009 /* Models.swift */,
+				A3000000000000000000000A /* Theme.swift */,
+				A3000000000000000000000D /* Atmosphere.swift */,
+				A3000000000000000000000E /* PlateRegistrationView.swift */,
+				A30000000000000000000011 /* OrderPaymentView.swift */,
+				A30000000000000000000012 /* CarConsoleNavigationView.swift */,
+				A30000000000000000000013 /* RestaurantKitchenView.swift */,
+				A3000000000000000000001C /* WebPanelView.swift */,
+				A3000000000000000000001D /* KonumumDirectory.swift */,
+				A3000000000000000000001E /* SürücüNavigasyonCarPlayView.swift */,
+				A3000000000000000000001F /* KonumumMemberTabs.swift */,
+				A30000000000000000000020 /* RestaurantSellerDeskView.swift */,
+				A30000000000000000000021 /* KonumumWebMenuStore.swift */,
+				A30000000000000000000022 /* KonumumLocation.swift */,
+				A30000000000000000000023 /* KonumumCarPlaySupport.swift */,
+				A3000000000000000000000F /* JetBrainsMono-Medium.ttf */,
+				A30000000000000000000010 /* OFL.txt */,
+				A3000000000000000000000B /* Assets.xcassets */,
+				A30000000000000000000014 /* Info.plist */,
+				A30000000000000000000015 /* KonumumLogo.png */,
+				A30000000000000000000016 /* AppIcon60x60@2x.png */,
+				A30000000000000000000017 /* AppIcon60x60@3x.png */,
+				A30000000000000000000018 /* AppIcon40x40@2x.png */,
+				A30000000000000000000019 /* AppIcon40x40@3x.png */,
+				A3000000000000000000001A /* AppIcon29x29@2x.png */,
+				A3000000000000000000001B /* AppIcon29x29@3x.png */,
+				A3000000000000000000000C /* Lumen.entitlements */,
+			);
+			path = Lumen;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000009 /* Lumen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000015 /* Build configuration list for PBXNativeTarget "Lumen" */;
+			buildPhases = (
+				A10000000000000000000006 /* Sources */,
+				A10000000000000000000007 /* Frameworks */,
+				A10000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Lumen;
+			productName = Lumen;
+			productReference = A10000000000000000000005 /* Lumen.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A10000000000000000000009 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A10000000000000000000014 /* Build configuration list for PBXProject "Lumen" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				tr,
+			);
+			mainGroup = A10000000000000000000002 /* = */;
+			productRefGroup = A10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000009 /* Lumen */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2000000000000000000000E /* JetBrainsMono-Medium.ttf in Resources */,
+				A2000000000000000000000F /* OFL.txt in Resources */,
+				A2000000000000000000000B /* Assets.xcassets in Resources */,
+				A20000000000000000000015 /* KonumumLogo.png in Resources */,
+				A20000000000000000000016 /* AppIcon60x60@2x.png in Resources */,
+				A20000000000000000000017 /* AppIcon60x60@3x.png in Resources */,
+				A20000000000000000000018 /* AppIcon40x40@2x.png in Resources */,
+				A20000000000000000000019 /* AppIcon40x40@3x.png in Resources */,
+				A2000000000000000000001A /* AppIcon29x29@2x.png in Resources */,
+				A2000000000000000000001B /* AppIcon29x29@3x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20000000000000000000001 /* LumenApp.swift in Sources */,
+				A2000000000000000000000D /* PlateRegistrationView.swift in Sources */,
+				A20000000000000000000011 /* OrderPaymentView.swift in Sources */,
+				A20000000000000000000012 /* CarConsoleNavigationView.swift in Sources */,
+				A20000000000000000000013 /* RestaurantKitchenView.swift in Sources */,
+				A2000000000000000000001C /* WebPanelView.swift in Sources */,
+				A2000000000000000000001D /* KonumumDirectory.swift in Sources */,
+				A2000000000000000000001E /* SürücüNavigasyonCarPlayView.swift in Sources */,
+				A2000000000000000000001F /* KonumumMemberTabs.swift in Sources */,
+				A20000000000000000000020 /* RestaurantSellerDeskView.swift in Sources */,
+				A20000000000000000000021 /* KonumumWebMenuStore.swift in Sources */,
+				A20000000000000000000022 /* KonumumLocation.swift in Sources */,
+				A20000000000000000000023 /* KonumumCarPlaySupport.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000000000000000000010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A10000000000000000000012 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D4P3GM859J;
+				COMPILER_INDEX_STORE_ENABLE = NO;
+				CODE_SIGN_ENTITLEMENTS = Lumen/Lumen.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				CURRENT_PROJECT_VERSION = 15;
+				EXCLUDED_SOURCE_FILE_NAMES = Assets.xcassets;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lumen/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = konumumyemek;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sipariş restorana iletildiğinde yaklaşma mesafesini göstermek için konumunuz kullanılır. Teslim aldığınızda veya restorana vardığınızda konum kapanır.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lumen.focus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D4P3GM859J;
+				COMPILER_INDEX_STORE_ENABLE = NO;
+				CODE_SIGN_ENTITLEMENTS = Lumen/Lumen.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "";
+				CURRENT_PROJECT_VERSION = 15;
+				EXCLUDED_SOURCE_FILE_NAMES = Assets.xcassets;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lumen/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = konumumyemek;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sipariş restorana iletildiğinde yaklaşma mesafesini göstermek için konumunuz kullanılır. Teslim aldığınızda veya restorana vardığınızda konum kapanır.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lumen.focus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000000000000000000014 /* Build configuration list for PBXProject "Lumen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000010 /* Debug */,
+				A10000000000000000000011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000015 /* Build configuration list for PBXNativeTarget "Lumen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000012 /* Debug */,
+				A10000000000000000000013 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A10000000000000000000001 /* Project object */;
+}
