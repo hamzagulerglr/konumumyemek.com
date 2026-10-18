@@ -6,3 +6,6 @@ xcuserdata/
 *.xcuserstate
 DerivedData/
 web/data/keep.log
+
+Package.swift
+requirements.txt
