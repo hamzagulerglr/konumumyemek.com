@@ -1,0 +1,4 @@
+http://konumumyemek.com/*      https://konumumyemek.com/:splat  301!
+http://www.konumumyemek.com/*  https://konumumyemek.com/:splat  301!
+/restoran-panel                /panel.html                      200
+/*                             /index.html                      200

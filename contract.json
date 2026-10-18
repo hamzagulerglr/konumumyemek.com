@@ -1,0 +1,57 @@
+{
+  "host": "konumumyemek.com",
+  "localOnly": true,
+  "notes": "Yarın akşam tarayıcı restoran paneli. Gerçek ödeme ve GPS yok. iOS KonumumDirectory ile aynı kimlikler.",
+  "routes": {
+    "panel": "/panel",
+    "login": "/panel/giris"
+  },
+  "auth": {
+    "restaurantLogin": {
+      "method": "POST",
+      "path": "/api/auth/restaurant",
+      "body": { "identifier": "email veya bayiKodu", "password": "string" },
+      "demo": { "identifier": "mcd@konumumyemek.com", "password": "mutfak55" }
+    },
+    "customerLogin": {
+      "method": "POST",
+      "path": "/api/auth/customer",
+      "demo": { "identifier": "musteri@konumumyemek.com", "password": "konumum55" }
+    }
+  },
+  "live": {
+    "method": "GET",
+    "path": "/api/live",
+    "query": { "restaurantId": "mcd-samsun" },
+    "shape": {
+      "plate": "34 KNM 55",
+      "meters": 140,
+      "seconds": 45,
+      "kitchenStatus": "Siparişiniz Hazırlanıyor",
+      "customerCollected": false
+    }
+  },
+  "restaurantProfile": {
+    "method": "PUT",
+    "path": "/api/restaurant/profile",
+    "fields": [
+      "officialTitle",
+      "branchTitle",
+      "email",
+      "password",
+      "phone",
+      "taxNumber",
+      "address",
+      "iban",
+      "mapLatitude",
+      "mapLongitude"
+    ]
+  },
+  "orders": {
+    "list": { "method": "GET", "path": "/api/orders" },
+    "create": { "method": "POST", "path": "/api/order" },
+    "collected": { "method": "POST", "path": "/api/orders/:id/collected" }
+  },
+  "catalog": { "method": "GET", "path": "/api/catalog" },
+  "health": { "method": "GET", "path": "/api/health" }
+}

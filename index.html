@@ -8,6 +8,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>konumumyemek.com · Restoran & Mutfak İşletme Paneli</title>
+  <link rel="shortcut icon" href="/favicon.ico?v=20261018-clean" type="image/x-icon" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20261018-clean" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20261018-clean" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20261018-clean" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=20261018-clean" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20261018-clean" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css?v=20261018-ssl" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -18,12 +24,15 @@
   <div id="ticketAlarm"></div>
 
   <section class="card login-grid" id="loginCard">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <h1>konumumyemek.com</h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="icon-192.png?v=20261018-clean" alt="konumumyemek.com" style="width:52px;height:52px;display:block;flex-shrink:0" />
+        <h1 style="margin:0">konumumyemek.com</h1>
+      </div>
       <span class="tag on" style="cursor:default;font-size:11px;padding:5px 10px">RESTORAN & MUTFAK PANELİ</span>
     </div>
     <p class="note" style="margin-top:8px">
-      Tersine araç takip ve mutfak yönetim sistemi (KDS). Müşteri siparişleri yalnızca <b>iOS mobil uygulamasından</b> verilir; bu panel yetkili restoran ve mutfak personeli içindir.
+      Tersine araç takip ve mutfak yönetim sistemi (KDS). Müşteri siparişleri yalnızca <b>mobil uygulamadan</b> verilir; bu panel yetkili restoran ve mutfak personeli içindir.
     </p>
     <div class="role-row" style="margin-top:14px;margin-bottom:4px">
       <button type="button" class="chip on" id="modeLoginBtn" style="flex:1;justify-content:center;font-weight:800">Giriş Yap</button>
@@ -41,37 +50,59 @@
         <button type="button" class="chip" data-staff="mutfak">Mutfak (KDS)</button>
         <button type="button" class="chip" data-staff="kasiyer">Kasiyer / Cam Teslim</button>
       </div>
-      <label class="toggle" style="color:var(--neon);font-weight:700"><input id="kvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> KVKK aydınlatma ve işletme veri işleme şartlarını kabul ediyorum.</label>
-      <p class="note"><a href="#legal" id="openLegal" style="color:var(--neon);font-weight:700;text-decoration:underline;text-underline-offset:3px">KVKK aydınlatma · açık rıza · mesafeli satış · güvenlik</a></p>
-      <div id="legalModal" class="hidden" style="margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(58,241,215,.35);font-size:12px;line-height:1.5;color:rgba(255,255,255,.85)">
-        <b style="color:var(--neon)">KVKK ve İşletme Veri İşleme Özeti:</b> Araç plakası ve canlı yaklaşım mesafesi yalnızca siparişin hazırlanması ve araç camından teslim edilmesi amacıyla işlenir. Teslimat tamamlandığında canlı konum takibi otomatik olarak sonlanır.
+      <label class="toggle" style="color:var(--neon);font-weight:700"><input id="kvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> 6698 sayılı KVKK aydınlatma metnini, Veri İşleyen protokolünü ve Üye İşyeri şartlarını kabul ediyorum.</label>
+      <p class="note"><a href="#legal" id="openLegal" style="color:var(--neon);font-weight:700;text-decoration:underline;text-underline-offset:3px">KVKK Aydınlatma · Üye İşyeri &amp; Komisyon Sözleşmesi · Mesafeli Satış · Veri İmha</a></p>
+      <div id="legalModal" class="hidden" style="margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(58,241,215,.35);font-size:12px;line-height:1.55;color:rgba(255,255,255,.88)">
+        <b style="color:var(--neon)">Hukuki Standartlar Özeti (KVKK · ETK · TKHK · 6493):</b><br/>
+        • <b>6698 Sayılı KVKK:</b> Müşteri plakası ve canlı GPS yaklaşım verisi yalnızca siparişin hazırlanması ve araç camından teslimi için işlenir; teslimat veya iptal anında canlı konum akışı derhal sonlanır.<br/>
+        • <b>6563 Sayılı ETK &amp; 6493 Hakediş:</b> Restoran, bildirdiği Resmi Ticari Ünvan, VKN/TCKN ve 26 haneli TR IBAN hesabının kendisine ait olduğunu; platform komisyonu (%12) düşüldükten sonra net hakedişin bu IBAN'a aktarılacağını kabul eder.<br/>
+        • <b>6502 Sayılı TKHK &amp; Mesafeli Satış (m.15/1-c):</b> Anında hazırlanan gıda siparişlerinde müşteri yalnızca "İletildi" aşamasında iptal yapabilir; "Mutfağa Al" onayından sonra üretim başladığından cayma hakkı istisnası uygulanır.<br/>
+        • <b>Mağaza Hesabı Silme (KVKK m.7):</b> İşletme, dilediği an "Restoran Profili &gt; Mağaza Hesabını Kalıcı Olarak Sil" adımıyla mağazasını, menüsünü ve bulut verilerini kalıcı olarak silebilir.
       </div>
       <div class="err" id="err"></div>
       <button class="primary" id="login" type="button">Restoran Paneline Gir</button>
     </div>
 
     <div id="registerFormPane" class="hidden">
-      <label>RESTORAN / ŞUBE ADI</label>
-      <input id="regBranchTitle" placeholder="Örn: Atakum Sahil Şubesi" autocomplete="off" />
-      <label>RESMİ TİCARİ ÜNVAN (İSTEĞE BAĞLI)</label>
-      <input id="regOfficialTitle" placeholder="Örn: Lezzet Gıda İşletmeleri A.Ş." autocomplete="off" />
       <div class="grid2" style="gap:10px">
         <div>
-          <label>KURUMSAL E-POSTA</label>
+          <label>RESTORAN / ŞUBE ADI *</label>
+          <input id="regBranchTitle" placeholder="Örn: Atakum Sahil Şubesi" autocomplete="off" />
+        </div>
+        <div>
+          <label>RESMİ TİCARİ ÜNVAN (FATURA / HAKEDİŞ) *</label>
+          <input id="regOfficialTitle" placeholder="Örn: Lezzet Gıda İşletmeleri A.Ş." autocomplete="off" />
+        </div>
+      </div>
+      <div class="grid2" style="gap:10px">
+        <div>
+          <label>VERGİ DAİRESİ *</label>
+          <input id="regTaxOffice" placeholder="Örn: 19 Mayıs V.D. / Gaziler V.D." autocomplete="off" />
+        </div>
+        <div>
+          <label>VERGİ KİMLİK NO (VKN 10 / TCKN 11 HANE) *</label>
+          <input id="regTaxNumber" maxlength="11" inputmode="numeric" placeholder="10 haneli VKN veya 11 haneli TCKN" autocomplete="off" />
+        </div>
+      </div>
+      <label>HAKEDİŞ BANKA IBAN (TR · 26 KARAKTER) *</label>
+      <input id="regIban" maxlength="32" placeholder="TR00 0000 0000 0000 0000 0000 00" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.6px" />
+      <div class="grid2" style="gap:10px">
+        <div>
+          <label>KURUMSAL E-POSTA *</label>
           <input id="regEmail" type="email" placeholder="ornek@isletme.com" autocomplete="off" />
         </div>
         <div>
-          <label>TELEFON</label>
+          <label>ŞUBE TELEFONU *</label>
           <input id="regPhone" placeholder="+90 5XX XXX XX XX" autocomplete="off" />
         </div>
       </div>
       <div class="grid2" style="gap:10px">
         <div>
-          <label>ŞİFRE BELİRLEYİN</label>
+          <label>ŞİFRE BELİRLEYİN *</label>
           <input id="regPassword" type="password" placeholder="En az 4 karakter" autocomplete="new-password" />
         </div>
         <div>
-          <label>ŞİFRE TEKRAR</label>
+          <label>ŞİFRE TEKRAR *</label>
           <input id="regPassword2" type="password" placeholder="Şifrenizi tekrar yazın" autocomplete="new-password" />
         </div>
       </div>
@@ -85,9 +116,13 @@
           <input id="regHours" value="09:00-23:00" placeholder="09:00-23:00" autocomplete="off" />
         </div>
       </div>
-      <label>AÇIK ADRES</label>
-      <input id="regAddress" placeholder="İl, ilçe, mahalle ve cadde bilgisi" autocomplete="off" />
-      <label class="toggle" style="color:var(--neon);font-weight:700"><input id="regKvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> İşletme üyelik sözleşmesini ve KVKK şartlarını kabul ediyorum.</label>
+      <label>AÇIK ADRES (ARAÇ TESLİM NOKTASI) *</label>
+      <input id="regAddress" placeholder="İl, ilçe, mahalle, cadde ve kapı no bilgisi" autocomplete="off" />
+      <div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(58,241,215,.22);display:flex;flex-direction:column;gap:6px">
+        <label class="toggle" style="color:var(--neon);font-weight:700;margin:0"><input id="regKvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> 6698 sayılı KVKK Aydınlatma Metni ve Veri İşleyen Sözleşmesini okudum, kabul ediyorum.</label>
+        <label class="toggle" style="color:#fff;font-weight:600;margin:0;font-size:12px"><input id="regMerchantContractOk" type="checkbox" checked style="accent-color:#3AF1D7" /> 6563 sayılı ETK Üye İşyeri Sözleşmesini, %12 platform komisyonunu ve TR IBAN hakediş şartlarını kabul ediyorum.</label>
+        <label class="toggle" style="color:#fff;font-weight:600;margin:0;font-size:12px"><input id="regFoodSafetyOk" type="checkbox" checked style="accent-color:#3AF1D7" /> 5996 sayılı Gıda Kanunu kapsamında işletme kayıt belgemin bulunduğunu ve 6502 sayılı TKHK kurallarına uyacağımı beyan ederim.</label>
+      </div>
       <div class="err" id="regErr"></div>
       <div class="ok" id="regOk"></div>
       <button class="primary" id="registerBtn" type="button">Üye Ol ve Panele Gir</button>
@@ -97,6 +132,7 @@
   <section id="app" class="hidden">
     <div class="bar">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <img src="icon-192.png?v=20261018-clean" alt="konumumyemek.com" style="width:42px;height:42px;display:block;flex-shrink:0" />
         <h1>konumumyemek.com · Mutfak & İşletme</h1>
         <span class="note" id="who"></span>
       </div>
@@ -142,6 +178,6 @@
       <div id="legalPane" class="hidden"></div>
     </div>
   </section>
-  <script src="app.js?v=20261018-gps"></script>
+  <script src="app.js?v=20261018-legal"></script>
 </body>
 </html>

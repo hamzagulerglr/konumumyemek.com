@@ -1,0 +1,15 @@
+{
+  "provider": "supabase-realtime-direct",
+  "note": "Aradaki Python WebSocket sunucusu kaldırıldı. iOS ve Web KDS doğrudan Supabase REST + Supabase Realtime (postgres_changes & broadcast) üzerinden haberleşir.",
+  "supabase": {
+    "projectId": "hetcihydnkgbuglsuzcs",
+    "url": "https://hetcihydnkgbuglsuzcs.supabase.co",
+    "anonKey": "sb_publishable_Xh8V52jmvs1JFpKX7v8SuA_SFk1DA0Z",
+    "serviceRoleKey": "",
+    "tables": {
+      "orders": "orders",
+      "live_tracking": "live_tracking",
+      "restaurant_state": "restaurant_state"
+    }
+  }
+}
