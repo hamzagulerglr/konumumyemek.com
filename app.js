@@ -92,13 +92,18 @@ try {
 function sanitizeOrderIdentity(order) {
   if (!order) return order;
   const name = String(order.driverName || order.customer || "").trim();
-  if (!name || /hamza/i.test(name)) {
+  if (!name) {
     order.driverName = "Ahmet Yılmaz";
     order.customer = "Ahmet Yılmaz";
+  } else {
+    order.driverName = name;
+    order.customer = name;
   }
   const plate = String(order.plate || "").trim();
-  if (!plate || /55\s*ACR\s*184/i.test(plate)) {
+  if (!plate) {
     order.plate = "34 KNM 55";
+  } else {
+    order.plate = plate;
   }
   if (order.items) {
     order.items = String(order.items).replace(" · Canlı Simülasyon", "");
@@ -801,6 +806,23 @@ async function tryRegister() {
   const bayiKodu = (existing && existing.bayiKodu) ? existing.bayiKodu : `BY-${randCode}`;
   const logoMark = branchTitle.slice(0, 2).toUpperCase();
 
+  let regLat = Number((existing && existing.latitude) || 41.3320);
+  let regLng = Number((existing && existing.longitude) || 36.2730);
+  if (navigator.geolocation && (!existing || !existing.latitude)) {
+    try {
+      const pos = await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), {
+          enableHighAccuracy: true,
+          timeout: 3500
+        });
+      });
+      if (pos && pos.coords) {
+        regLat = Number(pos.coords.latitude.toFixed(6));
+        regLng = Number(pos.coords.longitude.toFixed(6));
+      }
+    } catch { /* fallback default */ }
+  }
+
   const newProfile = {
     ...(existing || {}),
     id,
@@ -821,8 +843,8 @@ async function tryRegister() {
     logoMark,
     logoBg: (existing && existing.logoBg) || "#3AF1D7",
     logoFg: (existing && existing.logoFg) || "#0B0F19",
-    latitude: Number((existing && existing.latitude) || 41.3320),
-    longitude: Number((existing && existing.longitude) || 36.2730),
+    latitude: regLat,
+    longitude: regLng,
     kvkkApprovedAt: new Date().toISOString(),
     merchantContractApprovedAt: new Date().toISOString(),
     foodSafetyApprovedAt: new Date().toISOString(),
@@ -832,7 +854,52 @@ async function tryRegister() {
   runtime.profiles = runtime.profiles || {};
   runtime.profiles[id] = newProfile;
   runtime.menus = runtime.menus || {};
-  if (!runtime.menus[id]) runtime.menus[id] = [];
+  if (!runtime.menus[id] || !runtime.menus[id].length) {
+    runtime.menus[id] = [
+      {
+        id: `${id}-m1`,
+        name: `${branchTitle} Özel Menü`,
+        price: 220,
+        photo: "🍔",
+        photoBg: "#1a2433",
+        kcal: 540,
+        stock: 50,
+        category: "Ana yemek",
+        allergens: ["Gluten"],
+        variations: [
+          { id: "std", name: "Standart", priceDelta: 0 },
+          { id: "buyuk", name: "Büyük Seçim", priceDelta: 45 }
+        ],
+        soldOut: false
+      },
+      {
+        id: `${id}-m2`,
+        name: "Büyük Boy Patates Kızartması",
+        price: 75,
+        photo: "🍟",
+        photoBg: "#1a2433",
+        kcal: 380,
+        stock: 60,
+        category: "Yan",
+        allergens: [],
+        variations: [{ id: "std", name: "Standart", priceDelta: 0 }],
+        soldOut: false
+      },
+      {
+        id: `${id}-m3`,
+        name: "Soğuk İçecek / Ayran",
+        price: 45,
+        photo: "🥤",
+        photoBg: "#1a2433",
+        kcal: 120,
+        stock: 80,
+        category: "İçecek",
+        allergens: [],
+        variations: [{ id: "std", name: "Standart", priceDelta: 0 }],
+        soldOut: false
+      }
+    ];
+  }
 
   await persist();
 
@@ -1071,18 +1138,21 @@ function connectRealtime() {
       });
   }
   if (!socket || (socket.readyState !== WebSocket.OPEN && socket.readyState !== WebSocket.CONNECTING)) {
-    try {
-      const proto = location.protocol === "https:" ? "wss" : "ws";
-      socket = new WebSocket(`${proto}://${location.host}/ws`);
-      socket.onmessage = (msg) => {
-        try {
-          const ev = JSON.parse(msg.data);
-          if (ev && ev.order && ev.order.id) sub500Alarmed.delete(ev.order.id);
-          applyCloudEvent(ev);
-        } catch { /* ignore */ }
-      };
-      socket.onclose = () => { socket = null; };
-    } catch { /* ignore */ }
+    const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    if (isLocalhost) {
+      try {
+        const proto = location.protocol === "https:" ? "wss" : "ws";
+        socket = new WebSocket(`${proto}://${location.host}/ws`);
+        socket.onmessage = (msg) => {
+          try {
+            const ev = JSON.parse(msg.data);
+            if (ev && ev.order && ev.order.id) sub500Alarmed.delete(ev.order.id);
+            applyCloudEvent(ev);
+          } catch { /* ignore */ }
+        };
+        socket.onclose = () => { socket = null; };
+      } catch { /* ignore */ }
+    }
   }
   if (el) {
     el.textContent = "● Canlı Radar & Bulut Aktif";
@@ -1414,11 +1484,11 @@ async function clearOrders(mode = "completed") {
   if (sbClient) {
     try {
       if (mode === "all") {
-        await sbClient.from("live_tracking").delete().neq("order_id", "");
-        await sbClient.from("orders").delete().neq("id", "");
+        await sbClient.from("live_tracking").delete().eq("restaurant_id", session.id);
+        await sbClient.from("orders").delete().eq("restaurant_id", session.id);
       } else {
-        await sbClient.from("live_tracking").delete().in("order_status", ["teslim", "iptal"]);
-        await sbClient.from("orders").delete().in("order_status", ["teslim", "iptal"]);
+        await sbClient.from("live_tracking").delete().eq("restaurant_id", session.id).in("order_status", ["teslim", "iptal"]);
+        await sbClient.from("orders").delete().eq("restaurant_id", session.id).in("order_status", ["teslim", "iptal"]);
       }
     } catch { /* ignore */ }
   }
@@ -1727,7 +1797,10 @@ function renderCampaigns() {
     ${myCampaigns.map((c) =>
       `<div class="row" style="align-items:center">
         <div>
-          <b>${esc(c.title)}</b>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <b>${esc(c.title)}</b>
+            <span class="tag on" style="cursor:default;font-family:ui-monospace,Menlo,monospace">${esc(c.code || "KONUMUM20")} · %${Number(c.discountPercent || 20)}</span>
+          </div>
           <div class="note">${esc(c.detail)}</div>
         </div>
         <div class="act" style="margin:0">
@@ -1737,8 +1810,10 @@ function renderCampaigns() {
       </div>`
     ).join("") || "<p class='note'>İşletmenize ait henüz bir kampanya yok.</p>"}
     <div class="grid2" style="margin-top:14px">
-      <div><label>KAMPANYA BAŞLIĞI</label><input id="campTitle" placeholder="Örn: Araçta Teslim %20 İndirim" /></div>
-      <div><label>KAMPANYA DETAYI</label><input id="campDetail" placeholder="Örn: KONUMUM20 koduyla tüm menülerde geçerli" /></div>
+      <div><label>KAMPANYA BAŞLIĞI *</label><input id="campTitle" placeholder="Örn: Araçta Teslim %20 İndirim" /></div>
+      <div><label>KUPON KODU (MOBİL ÖDEMEDE GEÇERLİ)</label><input id="campCode" placeholder="Örn: ATAKUM20 (Varsayılan: KONUMUM20)" style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace" /></div>
+      <div><label>İNDİRİM ORANI (%)</label><input id="campPct" type="number" min="5" max="75" value="20" placeholder="20" /></div>
+      <div><label>KAMPANYA DETAYI</label><input id="campDetail" placeholder="Örn: Tüm menülerde araç camından teslimde geçerli" /></div>
     </div>
     <button class="primary" id="addCamp">Kampanya Ekle ve Yayınla</button>
   </div>`;
@@ -1746,7 +1821,10 @@ function renderCampaigns() {
   const add = $("addCamp");
   if (add) add.onclick = async () => {
     const title = $("campTitle").value.trim();
-    const detail = $("campDetail").value.trim();
+    const rawCode = String($("campCode")?.value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const code = rawCode || "KONUMUM20";
+    const discountPercent = Math.max(5, Math.min(75, Number($("campPct")?.value || 20)));
+    const detail = $("campDetail").value.trim() || `${code} koduyla %${discountPercent} indirim`;
     if (!title) return;
     const camp = {
       id: "c-" + Date.now(),
@@ -1754,6 +1832,8 @@ function renderCampaigns() {
       branchTitle: session.branchTitle,
       title,
       detail,
+      code,
+      discountPercent,
       active: true
     };
     runtime.campaigns = runtime.campaigns || [];
@@ -2213,20 +2293,22 @@ async function persist(replaceOrders = false) {
       body: JSON.stringify(rows)
     });
   } catch { /* fallback */ }
-  try {
-    await fetch("data/runtime.sync.json", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        menuExtras: runtime.menuExtras,
-        menus: runtime.menus || {},
-        profiles: runtime.profiles,
-        campaigns: runtime.campaigns,
-        orders: runtime.orders,
-        replaceOrders
-      })
-    });
-  } catch { /* static */ }
+  if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+    try {
+      await fetch("data/runtime.sync.json", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          menuExtras: runtime.menuExtras,
+          menus: runtime.menus || {},
+          profiles: runtime.profiles,
+          campaigns: runtime.campaigns,
+          orders: runtime.orders,
+          replaceOrders
+        })
+      });
+    } catch { /* static */ }
+  }
 }
 
 boot();
