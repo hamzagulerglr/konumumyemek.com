@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B0F19" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>konumumyemek.com · Restoran & Mutfak İşletme Paneli</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css?v=20261018-ssl" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="desk">
+  <div id="doorAlarm"></div>
+  <div id="readyAlarm"></div>
+  <div id="ticketAlarm"></div>
+
+  <section class="card login-grid" id="loginCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <h1>konumumyemek.com</h1>
+      <span class="tag on" style="cursor:default;font-size:11px;padding:5px 10px">RESTORAN & MUTFAK PANELİ</span>
+    </div>
+    <p class="note" style="margin-top:8px">
+      Tersine araç takip ve mutfak yönetim sistemi (KDS). Müşteri siparişleri yalnızca <b>iOS mobil uygulamasından</b> verilir; bu panel yetkili restoran ve mutfak personeli içindir.
+    </p>
+    <div class="role-row" style="margin-top:14px;margin-bottom:4px">
+      <button type="button" class="chip on" id="modeLoginBtn" style="flex:1;justify-content:center;font-weight:800">Giriş Yap</button>
+      <button type="button" class="chip" id="modeRegisterBtn" style="flex:1;justify-content:center;font-weight:800">Yeni İşletme Üye Ol</button>
+    </div>
+
+    <div id="loginFormPane">
+      <label>RESTORAN E-POSTA VEYA BAYİ KODU</label>
+      <input id="email" placeholder="Kurumsal e-posta veya bayi kodunuz" autocomplete="username" />
+      <label>ŞİFRE</label>
+      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+      <label>PERSONEL ROLÜ</label>
+      <div class="role-row" id="staffRoles">
+        <button type="button" class="chip on" data-staff="yonetici">Yönetici</button>
+        <button type="button" class="chip" data-staff="mutfak">Mutfak (KDS)</button>
+        <button type="button" class="chip" data-staff="kasiyer">Kasiyer / Cam Teslim</button>
+      </div>
+      <label class="toggle" style="color:var(--neon);font-weight:700"><input id="kvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> KVKK aydınlatma ve işletme veri işleme şartlarını kabul ediyorum.</label>
+      <p class="note"><a href="#legal" id="openLegal" style="color:var(--neon);font-weight:700;text-decoration:underline;text-underline-offset:3px">KVKK aydınlatma · açık rıza · mesafeli satış · güvenlik</a></p>
+      <div id="legalModal" class="hidden" style="margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(58,241,215,.35);font-size:12px;line-height:1.5;color:rgba(255,255,255,.85)">
+        <b style="color:var(--neon)">KVKK ve İşletme Veri İşleme Özeti:</b> Araç plakası ve canlı yaklaşım mesafesi yalnızca siparişin hazırlanması ve araç camından teslim edilmesi amacıyla işlenir. Teslimat tamamlandığında canlı konum takibi otomatik olarak sonlanır.
+      </div>
+      <div class="err" id="err"></div>
+      <button class="primary" id="login" type="button">Restoran Paneline Gir</button>
+    </div>
+
+    <div id="registerFormPane" class="hidden">
+      <label>RESTORAN / ŞUBE ADI</label>
+      <input id="regBranchTitle" placeholder="Örn: Atakum Sahil Şubesi" autocomplete="off" />
+      <label>RESMİ TİCARİ ÜNVAN (İSTEĞE BAĞLI)</label>
+      <input id="regOfficialTitle" placeholder="Örn: Lezzet Gıda İşletmeleri A.Ş." autocomplete="off" />
+      <div class="grid2" style="gap:10px">
+        <div>
+          <label>KURUMSAL E-POSTA</label>
+          <input id="regEmail" type="email" placeholder="ornek@isletme.com" autocomplete="off" />
+        </div>
+        <div>
+          <label>TELEFON</label>
+          <input id="regPhone" placeholder="+90 5XX XXX XX XX" autocomplete="off" />
+        </div>
+      </div>
+      <div class="grid2" style="gap:10px">
+        <div>
+          <label>ŞİFRE BELİRLEYİN</label>
+          <input id="regPassword" type="password" placeholder="En az 4 karakter" autocomplete="new-password" />
+        </div>
+        <div>
+          <label>ŞİFRE TEKRAR</label>
+          <input id="regPassword2" type="password" placeholder="Şifrenizi tekrar yazın" autocomplete="new-password" />
+        </div>
+      </div>
+      <div class="grid2" style="gap:10px">
+        <div>
+          <label>MUTFAK KATEGORİSİ</label>
+          <input id="regCuisine" placeholder="Burger · Döner · Kahve vb." autocomplete="off" />
+        </div>
+        <div>
+          <label>ÇALIŞMA SAATLERİ</label>
+          <input id="regHours" value="09:00-23:00" placeholder="09:00-23:00" autocomplete="off" />
+        </div>
+      </div>
+      <label>AÇIK ADRES</label>
+      <input id="regAddress" placeholder="İl, ilçe, mahalle ve cadde bilgisi" autocomplete="off" />
+      <label class="toggle" style="color:var(--neon);font-weight:700"><input id="regKvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> İşletme üyelik sözleşmesini ve KVKK şartlarını kabul ediyorum.</label>
+      <div class="err" id="regErr"></div>
+      <div class="ok" id="regOk"></div>
+      <button class="primary" id="registerBtn" type="button">Üye Ol ve Panele Gir</button>
+    </div>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="bar">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1>konumumyemek.com · Mutfak & İşletme</h1>
+        <span class="note" id="who"></span>
+      </div>
+      <div id="wsStatus" class="cloud-pill">● Canlı Radar & Bulut Aktif</div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="wrap">
+      <div id="navPane" class="hidden">
+        <div class="card">
+          <div class="kds-head">
+            <div>
+              <h2>Mutfak · Canlı Bilet Tahtası (KDS)</h2>
+              <p class="legend note">
+                <span class="g">● Yeni Sipariş (≥1000 m)</span>
+                <span class="y">● Orta Mesafe (500–1000 m)</span>
+                <span class="r">● Kapı Önü (&lt;500 m · 0 m Sesli Alarm + Camdan Teslim)</span>
+              </p>
+            </div>
+            <div class="ops">
+              <button class="ghost" id="openToggle" type="button">Açık</button>
+              <button class="ghost" id="clearCompletedBtn" type="button">Tamamlananları Temizle</button>
+              <button class="ghost" id="clearBoardBtn" type="button" style="border-color:rgba(255,66,114,.75);color:#FF4272">Tahtayı Temizle</button>
+              <button class="ghost" id="busyToggle" type="button">Yoğunluk · Düşük</button>
+            </div>
+          </div>
+          <div id="kdsSummary" class="grid4" style="margin-bottom:14px"></div>
+          <div class="kds-layout">
+            <div class="kds-cols" id="kdsBoard"></div>
+            <div class="kds-map">
+              <h3>Canlı Araç Radar & Yaklaşım</h3>
+              <p class="note">Mobil uygulamadan sipariş veren araçların canlı mesafesi ve tahmini varış süresi (ETA). 0 m olduğunda kırmızı alarm ve ses devreye girer.</p>
+              <canvas id="map" width="520" height="280"></canvas>
+              <div id="liveList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="ordersPane" class="hidden"></div>
+      <div id="menuPane" class="hidden"></div>
+      <div id="campaignsPane" class="hidden"></div>
+      <div id="reportsPane" class="hidden"></div>
+      <div id="profilePane" class="hidden"></div>
+      <div id="legalPane" class="hidden"></div>
+    </div>
+  </section>
+  <script src="app.js?v=20261018-gps"></script>
+</body>
+</html>
