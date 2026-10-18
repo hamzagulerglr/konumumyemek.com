@@ -45,8 +45,12 @@ struct KonumumWebOrder: Codable, Hashable, Identifiable, Sendable {
 
 struct KonumumWebCampaign: Codable, Hashable, Identifiable, Sendable {
     var id: String
+    var restaurantId: String?
+    var branchTitle: String?
     var title: String
     var detail: String
+    var code: String?
+    var discountPercent: Int?
     var active: Bool?
 }
 

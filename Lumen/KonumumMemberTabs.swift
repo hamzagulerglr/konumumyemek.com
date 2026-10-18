@@ -369,13 +369,19 @@ struct KampanyalarView: View {
 
                     ForEach(directory.webCampaigns) { item in
                         VStack(alignment: .leading, spacing: 8) {
+                            if let branch = item.branchTitle, !branch.isEmpty {
+                                Text(branch.uppercased())
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .tracking(0.8)
+                                    .foregroundStyle(KonumumTheme.neon)
+                            }
                             Text(item.title)
                                 .font(.system(size: 17, weight: .semibold))
                                 .foregroundStyle(.white)
                             Text(item.detail)
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundStyle(Color.white.opacity(0.72))
-                            Text("WEB")
+                            Text(item.code ?? "KONUMUM20")
                                 .font(KonumumFont.plate(16))
                                 .foregroundStyle(KonumumTheme.ink)
                                 .padding(.horizontal, 12)

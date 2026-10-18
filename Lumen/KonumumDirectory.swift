@@ -304,6 +304,15 @@ final class KonumumDirectory: ObservableObject {
 
     func applyVenues(_ patches: [KonumumVenuePatch]) {
         guard !patches.isEmpty else { return }
+        let staticIds = Set([
+            "mcd-samsun", "bk-samsun", "kfc-samsun", "yusuf-samsun",
+            "adiyorem-samsun", "calikusu-samsun", "haci-samsun",
+            "pizza-samsun", "simit-samsun"
+        ])
+        let incomingIds = Set(patches.map(\.id))
+        restaurants.removeAll { row in
+            !staticIds.contains(row.id) && !incomingIds.contains(row.id)
+        }
         restaurants = restaurants.map { row in
             guard let patch = patches.first(where: { $0.id == row.id }) else { return row }
             var next = row

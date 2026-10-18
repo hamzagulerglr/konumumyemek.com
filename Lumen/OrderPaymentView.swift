@@ -23,9 +23,12 @@ struct OrderPaymentView: View {
     @State private var placedOrderId: String?
     @State private var couponCode = ""
     @State private var couponOn = false
+    @State private var couponPercent = 20
 
     private var payableTotal: Int {
-        couponOn ? max(0, Int((Double(total) * 0.8).rounded())) : total
+        guard couponOn else { return total }
+        let factor = max(0.0, min(1.0, Double(100 - couponPercent) / 100.0))
+        return max(0, Int((Double(total) * factor).rounded()))
     }
 
     private var total: Int {
@@ -881,13 +884,25 @@ struct OrderPaymentView: View {
                     .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .foregroundStyle(.white)
                 Button(L("Uygula", "Apply")) {
-                    couponOn = couponCode.trimmingCharacters(in: .whitespaces).uppercased() == "KONUMUM20"
+                    let entered = couponCode.trimmingCharacters(in: .whitespaces).uppercased()
+                    if let matched = directory.webCampaigns.first(where: {
+                        ($0.code ?? "KONUMUM20").uppercased() == entered &&
+                        ($0.restaurantId == nil || $0.restaurantId == brand.directoryId)
+                    }) {
+                        couponOn = true
+                        couponPercent = matched.discountPercent ?? 20
+                    } else if ["KONUMUM20", "YUSUF15", "MUTFAK40", "METROPOL2X", "METRO50"].contains(entered) {
+                        couponOn = true
+                        couponPercent = entered == "YUSUF15" ? 15 : 20
+                    } else {
+                        couponOn = false
+                    }
                 }
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(KonumumTheme.neon)
             }
             if couponOn {
-                Text(L("KONUMUM20 · %20 uygulandı", "KONUMUM20 · 20% discount applied"))
+                Text(L("\(couponCode.uppercased()) · %\(couponPercent) uygulandı", "\(couponCode.uppercased()) · \(couponPercent)% discount applied"))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(KonumumTheme.neon)
             }
@@ -896,10 +911,17 @@ struct OrderPaymentView: View {
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.white)
 
-            HStack(spacing: 6) {
-                ForEach([MealPayment.sodexo, .multinet, .setcard, .metropol, .card]) { method in
-                    paymentButton(method)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach([
+                        MealPayment.metropol, .sodexo, .multinet, .setcard,
+                        .ticket, .card, .applePay, .googlePay, .nakit
+                    ]) { method in
+                        paymentButton(method)
+                            .frame(width: 82)
+                    }
                 }
+                .padding(.vertical, 2)
             }
 
             if attemptedSend && payment == nil {
@@ -1470,11 +1492,13 @@ private enum RestaurantBrand: Hashable, Identifiable {
             .frame(width: 46, height: 46)
         case .custom(let acc):
             let mark = acc.logoMark.isEmpty ? String(acc.brandName.prefix(2)).uppercased() : acc.logoMark
+            let bgHex = acc.logoBg.isEmpty ? "#3AF1D7" : acc.logoBg
+            let fgHex = acc.logoFg.isEmpty ? "#0B0F19" : acc.logoFg
             Text(mark)
                 .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundStyle(KonumumTheme.ink)
+                .foregroundStyle(Color(hex: fgHex))
                 .frame(width: 46, height: 46)
-                .background(KonumumTheme.neon, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(Color(hex: bgHex), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 }
@@ -1787,9 +1811,9 @@ private struct SecurePaymentRoom: View {
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: 4) {
                         Image(systemName: "lock.fill")
-                        Text("SSL")
+                        Text("SSL · TEST MODU (Karttan Ücret Çekilmez)")
                     }
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(paidGreen)
                 }
             }
