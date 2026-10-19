@@ -254,6 +254,23 @@ function canManage() {
   return staffOf() === "yonetici";
 }
 
+function isSuperAdmin() {
+  if (!session) return false;
+  if (session.superAdmin) return true;
+  const em = String(session.email || "").trim().toLowerCase();
+  const by = String(session.bayiKodu || "").trim().toLowerCase();
+  const id = String(session.id || "").trim().toLowerCase();
+  return (
+    em === "hamza_guler@hotmail.com" ||
+    em === "hamzaguler@outlook.com" ||
+    em === "hghamzaguler@gmail.com" ||
+    em === "admin@konumumyemek.com" ||
+    em === "info@konumumyemek.com" ||
+    by === "by-9822" ||
+    id === "hmzglr-9822"
+  ) && canManage();
+}
+
 function profileOf(id) {
   return (runtime.profiles || {})[id || session?.id] || {};
 }
@@ -390,6 +407,10 @@ function applyStateRecord(key, payload) {
   }
   if (key === "campaigns" && Array.isArray(payload) && payload.length) {
     runtime.campaigns = payload;
+    return true;
+  }
+  if (key === "supportTickets" && Array.isArray(payload)) {
+    runtime.supportTickets = payload;
     return true;
   }
   return false;
@@ -675,13 +696,54 @@ function bindStaffChips() {
       e.target.value = String(e.target.value || "").replace(/\D/g, "").slice(0, 11);
     };
   }
+  const openSupportBtn = $("openSupportBtn");
+  const supportModal = $("supportModal");
+  if (openSupportBtn && supportModal) {
+    openSupportBtn.onclick = () => {
+      supportModal.classList.toggle("hidden");
+    };
+  }
+  const sendSupportBtn = $("sendSupportBtn");
+  if (sendSupportBtn) {
+    sendSupportBtn.onclick = submitSupportTicket;
+  }
+}
+
+async function submitSupportTicket() {
+  const errEl = $("supErr");
+  const okEl = $("supOk");
+  if (errEl) errEl.textContent = "";
+  if (okEl) okEl.textContent = "";
+  const name = String($("supName")?.value || "").trim();
+  const contact = String($("supContact")?.value || "").trim();
+  const msg = String($("supMsg")?.value || "").trim();
+  if (!name || !contact || !msg) {
+    if (errEl) errEl.textContent = "Lütfen adınızı/işletmenizi, iletişim bilginizi ve mesajınızı yazın.";
+    return;
+  }
+  await fetchDirectSupabaseState();
+  runtime.supportTickets = Array.isArray(runtime.supportTickets) ? runtime.supportTickets : [];
+  runtime.supportTickets.unshift({
+    id: "SUP-" + Date.now(),
+    name,
+    contact,
+    message: msg,
+    status: "bekliyor",
+    createdAt: new Date().toISOString()
+  });
+  await persist();
+  if ($("supName")) $("supName").value = "";
+  if ($("supContact")) $("supContact").value = "";
+  if ($("supMsg")) $("supMsg").value = "";
+  if (okEl) okEl.textContent = "Talebiniz Konumum Genel Merkez'e ve info@konumumyemek.com sistemine iletildi. En kısa sürede dönüş yapılacaktır.";
 }
 
 function switchBranch(id, persistSession = true) {
   const row = restaurantById(id);
   if (!row || !session) return;
   const staffRole = session.staffRole || "yonetici";
-  session = { ...row, ...(runtime.profiles[row.id] || {}), id: row.id, role: "restaurant", staffRole, authToken: row.password };
+  const keepSuper = Boolean(session.superAdmin || isSuperAdmin());
+  session = { ...row, ...(runtime.profiles[row.id] || {}), id: row.id, role: "restaurant", staffRole, authToken: row.password, superAdmin: keepSuper };
   if (persistSession) storeSession();
   updateHeaderWho();
 }
@@ -759,10 +821,11 @@ async function tryRegister() {
     return;
   }
   const branchTitle = String($("regBranchTitle")?.value || "").trim();
-  const officialTitle = String($("regOfficialTitle")?.value || "").trim();
+  const officialTitle = String($("regOfficialTitle")?.value || "").trim() || branchTitle;
   const taxOffice = String($("regTaxOffice")?.value || "").trim();
   const taxNumber = String($("regTaxNumber")?.value || "").replace(/\D/g, "").trim();
-  const iban = formatTrIban($("regIban")?.value || "");
+  const rawIban = String($("regIban")?.value || "").trim();
+  const iban = rawIban ? formatTrIban(rawIban) : "";
   const email = String($("regEmail")?.value || "").trim().toLowerCase();
   const phone = String($("regPhone")?.value || "").trim();
   const password = String($("regPassword")?.value || "").trim();
@@ -771,23 +834,23 @@ async function tryRegister() {
   const hours = String($("regHours")?.value || "").trim() || "09:00-23:00";
   const address = String($("regAddress")?.value || "").trim();
 
-  if (!branchTitle || !officialTitle || !email || !phone || !password || !address) {
-    if (errEl) errEl.textContent = "Lütfen Şube Adı, Resmi Ticari Ünvan, Kurumsal E-posta, Telefon, Şifre ve Açık Adres alanlarını eksiksiz doldurun.";
+  if (!branchTitle || !email || !password) {
+    if (errEl) errEl.textContent = "Lütfen en azından Restoran / Şube Adı, Kurumsal E-posta ve Şifre alanlarını doldurun (diğer bilgileri üyelik sonrasında Restoran Profili sekmesinden tamamlayabilirsiniz).";
     return;
   }
-  if (!taxOffice || !isValidTaxOrTckn(taxNumber)) {
-    if (errEl) errEl.textContent = "Lütfen Vergi Dairesi ve geçerli bir Vergi Kimlik No (10 hane) veya TCKN (11 hane) girin.";
+  if (taxNumber && !isValidTaxOrTckn(taxNumber)) {
+    if (errEl) errEl.textContent = "Vergi Kimlik No (10 hane) veya TCKN (11 hane) eksik/hatalı görünüyor. Şimdi boş bırakıp daha sonra Restoran Profili sekmesinden tamamlayabilirsiniz.";
     return;
   }
-  if (!isValidTrIban(iban)) {
-    if (errEl) errEl.textContent = "Lütfen hakediş ödemeleri için TR ile başlayan 26 haneli geçerli bir banka IBAN numarası girin.";
+  if (iban && iban !== "TR" && !isValidTrIban(iban)) {
+    if (errEl) errEl.textContent = "Girilen IBAN 26 haneli TR formatında değil. Şimdi boş bırakıp daha sonra Restoran Profili sekmesinden tamamlayabilirsiniz.";
     return;
   }
   if (password.length < 4) {
     if (errEl) errEl.textContent = "Şifreniz en az 4 karakter olmalıdır.";
     return;
   }
-  if (password !== password2) {
+  if (password2 && password !== password2) {
     if (errEl) errEl.textContent = "Girdiğiniz şifreler birbiriyle eşleşmiyor.";
     return;
   }
@@ -1201,6 +1264,7 @@ async function syncState() {
     draw();
   }
   if (tab === "orders") renderOrders();
+  if (tab === "hq") renderHq();
 }
 
 function renderTabs() {
@@ -1211,7 +1275,8 @@ function renderTabs() {
     canManage() ? ["campaigns", "Kampanyalar"] : null,
     canManage() || canCash() ? ["reports", "Rapor & Hakediş"] : null,
     ["profile", "Restoran Profili"],
-    ["legal", "Hukuk & KVKK"]
+    ["legal", "Hukuk & KVKK"],
+    isSuperAdmin() ? ["hq", "👑 Genel Merkez (Patron)"] : null
   ].filter(Boolean);
 
   $("tabs").innerHTML = items.map(([id, title]) => {
@@ -1241,7 +1306,7 @@ function showTab(id) {
   renderTabs();
   const restaurantHome = id === "home";
   $("navPane").classList.toggle("hidden", !restaurantHome);
-  ["orders", "menu", "campaigns", "reports", "profile", "legal"].forEach((name) => {
+  ["orders", "menu", "campaigns", "reports", "profile", "legal", "hq"].forEach((name) => {
     const pane = $(name + "Pane");
     if (pane) pane.classList.toggle("hidden", name !== id);
   });
@@ -1257,6 +1322,7 @@ function showTab(id) {
   if (id === "reports") renderReports();
   if (id === "profile") renderProfile();
   if (id === "legal") renderLegal();
+  if (id === "hq") renderHq();
 }
 
 function statusRail(status, cancelReason) {
@@ -2172,7 +2238,12 @@ function renderReports() {
       <div class="metric"><span class="note">Ortalama Sepet (AOV)</span><b>₺${aov}</b></div>
       <div class="metric"><span class="note">Yoğun Saat</span><b>${peak ? peak[0] + ":00" : "—"}</b></div>
       <div class="metric"><span class="note">Platform Komisyonu (%${Math.round(COMMISSION * 100)})</span><b style="color:#FFD129">₺${fee}</b></div>
-      <div class="metric"><span class="note">Restoran Net Hakediş</span><b style="color:#3AF1D7">₺${gmv - fee}</b></div>
+      <div class="metric"><span class="note">Restoran Net Hakediş (%${Math.round((1 - COMMISSION) * 100)})</span><b style="color:#3AF1D7">₺${gmv - fee}</b></div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(58,241,215,.07);border:1px solid rgba(58,241,215,.28);font-size:12px;line-height:1.6">
+      <b style="color:var(--neon)">🧾 Otomatik Komisyon Faturası &amp; Hakediş Aktarım Özeti:</b><br/>
+      • <b>Komisyon e-Fatura / e-Arşiv No:</b> <span style="font-family:ui-monospace,Menlo,monospace">KY-${day.replace(/-/g, "")}-${esc((session.bayiKodu || session.id || "001").toUpperCase())}</span><br/>
+      • <b>Tahsilat Dağılımı:</b> Brüt <b>₺${gmv}</b> tutar üzerinden <b>%${Math.round(COMMISSION * 100)} (₺${fee} KDV Dahil)</b> Konumum Yemek hizmet komisyonu otomatik mahsup edilir; kalan <b>₺${gmv - fee}</b> net hakediş kayıtlı TR IBAN hesabınıza aktarılır.
     </div>
     <h3 style="margin-top:20px">Yemek Kartı & Ödeme Dağılımı</h3>
     <div>
@@ -2181,6 +2252,128 @@ function renderReports() {
       ).join("") || "<p class='note'>Henüz ödeme kaydı yok.</p>"}
     </div>
   </div>`;
+}
+
+function renderHq() {
+  const pane = $("hqPane");
+  if (!pane || !session) return;
+  const stores = allRestaurants();
+  const allOrd = Array.isArray(runtime.orders) ? runtime.orders : [];
+  const validOrd = allOrd.filter((o) => o && o.status !== "iptal" && !isSystemStateOrderRow(o));
+  const totalGmv = validOrd.reduce((sum, o) => sum + Number(o.total || 0), 0);
+  const totalCommission = Math.round(totalGmv * COMMISSION);
+  const totalNetToRestaurants = totalGmv - totalCommission;
+  const approachingCars = validOrd.filter((o) => o.status !== "teslim" && Number(o.meters) >= 0).length;
+  const tickets = Array.isArray(runtime.supportTickets) ? runtime.supportTickets : [];
+
+  const byStore = {};
+  stores.forEach((s) => {
+    byStore[s.id] = { store: s, count: 0, gmv: 0, fee: 0, net: 0 };
+  });
+  validOrd.forEach((o) => {
+    const rid = o.restaurantId || "unknown";
+    if (!byStore[rid]) {
+      byStore[rid] = { store: { id: rid, branchTitle: rid, bayiKodu: rid }, count: 0, gmv: 0, fee: 0, net: 0 };
+    }
+    const amt = Number(o.total || 0);
+    byStore[rid].count += 1;
+    byStore[rid].gmv += amt;
+    byStore[rid].fee = Math.round(byStore[rid].gmv * COMMISSION);
+    byStore[rid].net = byStore[rid].gmv - byStore[rid].fee;
+  });
+
+  const dayCode = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
+  pane.innerHTML = `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="margin:0;color:#FFD129">👑 Konumum Yemek · Türkiye Genel Merkez (Patron Paneli)</h2>
+        <p class="note" style="margin:4px 0 0 0">Tüm üye restoranlar, Türkiye geneli canlı ciro, %${Math.round(COMMISSION * 100)} net komisyon kasası, otomatik e-fatura mutabakatı ve gelen destek talepleri.</p>
+      </div>
+      <span style="padding:6px 12px;border-radius:999px;background:rgba(56,242,122,.14);border:1px solid rgba(56,242,122,.45);color:#38F27A;font-size:12px;font-weight:800">● CANLI BULUT SENKRON</span>
+    </div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="metric"><span class="note">Kayıtlı Üye Restoran / Şube</span><b>${stores.length}</b></div>
+      <div class="metric"><span class="note">Aktif Sipariş / Yoldaki Araç</span><b style="color:#3AF1D7">${validOrd.length} Sipariş (${approachingCars} Yolda)</b></div>
+      <div class="metric"><span class="note">Türkiye Geneli Brüt Ciro (GMV)</span><b>₺${totalGmv}</b></div>
+      <div class="metric"><span class="note">👑 Konumum Yemek Net Komisyon (%${Math.round(COMMISSION * 100)})</span><b style="color:#38F27A;font-size:22px">₺${totalCommission}</b></div>
+      <div class="metric"><span class="note">Restoranlara Ödenecek Net Hakediş (%${Math.round((1 - COMMISSION) * 100)})</span><b style="color:#FFD129">₺${totalNetToRestaurants}</b></div>
+      <div class="metric"><span class="note">Kurumsal E-Posta &amp; Destek Kutusu</span><b style="font-size:14px;color:#3AF1D7">info@konumumyemek.com (${tickets.length} Talep)</b></div>
+    </div>
+
+    <h3 style="margin-top:22px;color:var(--neon)">🧾 Otomatik Komisyon (%${Math.round(COMMISSION * 100)}) &amp; e-Fatura Mutabakat Tablosu</h3>
+    <p class="note">iyzico Pazaryeri (Split Payment) ve otomatik e-Fatura kesimi için şube bazlı anlık komisyon dağılımı.</p>
+    <div style="margin-top:10px;display:grid;gap:8px">
+      ${Object.values(byStore).map((row) => {
+        const s = row.store;
+        const invNo = `KYF-${dayCode}-${String(s.bayiKodu || s.id).toUpperCase()}`;
+        const hasBilling = Boolean(s.taxNumber && s.iban && s.iban.length >= 10);
+        return `<div class="list-item" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div>
+            <b>${esc(s.branchTitle || s.id)}</b> <span class="note">(${esc(s.bayiKodu || s.id)})</span><br/>
+            <span class="note" style="font-size:11px">Fatura No: <b>${esc(invNo)}</b> · VKN: ${esc(s.taxNumber || "Henüz Girilmedi")} · IBAN: ${esc(s.iban || "Henüz Girilmedi")}</span>
+          </div>
+          <div style="text-align:right">
+            <span class="note">${row.count} Sipariş · Brüt ₺${row.gmv}</span><br/>
+            <b style="color:#38F27A">Komisyon (%12): ₺${row.fee}</b> · <span style="color:#FFD129;font-weight:700">Restoran Net: ₺${row.net}</span>
+            <span style="margin-left:8px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:${hasBilling ? "rgba(56,242,122,.15)" : "rgba(255,209,41,.15)"};color:${hasBilling ? "#38F27A" : "#FFD129"}">${hasBilling ? "✓ Fatura/IBAN Hazır" : "⏳ VKN/IBAN Bekleniyor"}</span>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <h3 style="margin-top:22px;color:var(--neon)">🏪 Kayıtlı Üye İşyerleri &amp; Doğrudan Yönetim (${stores.length} Mağaza)</h3>
+    <p class="note">Instagram veya web üzerinden üye olan tüm restoranların iletişim, VKN, IBAN bilgileri ve tek tıkla mağaza görünümüne geçiş.</p>
+    <div style="margin-top:10px;display:grid;gap:8px">
+      ${stores.map((s) => {
+        const st = storeOpenState(s.id);
+        const complete = Boolean(s.taxNumber && s.iban && s.iban.length >= 10);
+        return `<div class="list-item" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div style="line-height:1.5">
+            <b>${esc(s.branchTitle)}</b> <span style="color:var(--neon);font-family:ui-monospace,Menlo,monospace;font-size:12px">[${esc(s.bayiKodu || s.id)}]</span>
+            ${st.effectiveOpen ? `<span style="color:#38F27A;font-size:11px;font-weight:800">● AÇIK</span>` : `<span style="color:#FF4272;font-size:11px;font-weight:800">● KAPALI</span>`}
+            ${complete ? `<span style="color:#3AF1D7;font-size:11px;margin-left:6px">✓ Resmi Evrak Tamam</span>` : `<span style="color:#FFD129;font-size:11px;margin-left:6px">⚡ Hızlı Üye (VKN/IBAN Sonradan Girilecek)</span>`}<br/>
+            <span class="note" style="font-size:11px">📧 ${esc(s.email || "—")} · 📞 ${esc(s.phone || "Belirtilmedi")} · 🏢 ${esc(s.officialTitle || "—")}</span><br/>
+            <span class="note" style="font-size:11px">🏛️ Vergi Dairesi/VKN: ${esc(s.taxOffice || "—")} / ${esc(s.taxNumber || "—")} · 💳 IBAN: <span style="font-family:ui-monospace,Menlo,monospace">${esc(s.iban || "—")}</span></span>
+          </div>
+          <div>
+            <button type="button" class="mini" data-hq-switch="${esc(s.id)}" style="border-color:var(--neon);color:var(--neon);font-weight:800">Mağazayı Denetle</button>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <h3 style="margin-top:22px;color:var(--neon)">💬 Web Sitesinden Gelen Destek &amp; İletişim Talepleri (info@konumumyemek.com)</h3>
+    <div style="margin-top:10px;display:grid;gap:8px">
+      ${tickets.length ? tickets.map((t, idx) => `
+        <div class="list-item" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+          <div>
+            <b>${esc(t.name)}</b> <span class="note">(${esc(t.contact)})</span> · <span class="note" style="font-size:11px">${esc(new Date(t.createdAt || Date.now()).toLocaleString("tr-TR"))}</span>
+            <div style="margin-top:4px;font-size:13px;color:var(--ink)">${esc(t.message)}</div>
+          </div>
+          <button type="button" class="mini" data-del-ticket="${idx}" style="color:#FF4272;border-color:rgba(255,66,114,.5)">Arşivle / Sil</button>
+        </div>
+      `).join("") : `<p class="note">Henüz web formundan gönderilmiş bir destek talebi yok. Restoranların veya müşterilerin <b>"💬 Bize Ulaşın / Destek Talebi"</b> butonundan yazdığı tüm mesajlar anında buraya düşer.</p>`}
+    </div>
+  </div>`;
+
+  [...pane.querySelectorAll("[data-hq-switch]")].forEach((btn) => {
+    btn.onclick = () => {
+      switchBranch(btn.dataset.hqSwitch);
+      showTab("home");
+    };
+  });
+  [...pane.querySelectorAll("[data-del-ticket]")].forEach((btn) => {
+    btn.onclick = async () => {
+      const i = Number(btn.dataset.delTicket);
+      if (Array.isArray(runtime.supportTickets)) {
+        runtime.supportTickets.splice(i, 1);
+        await persist();
+        renderHq();
+      }
+    };
+  });
 }
 
 function renderLegal() {
@@ -2263,6 +2456,7 @@ async function persist(replaceOrders = false) {
     { key: "menuExtras", payload: runtime.menuExtras || {}, updated_at: nowIso },
     { key: "profiles", payload: runtime.profiles || {}, updated_at: nowIso },
     { key: "campaigns", payload: runtime.campaigns || [], updated_at: nowIso },
+    { key: "supportTickets", payload: runtime.supportTickets || [], updated_at: nowIso },
     ...accountRows
   ];
   const orderStateRows = rows.map((r) => ({
