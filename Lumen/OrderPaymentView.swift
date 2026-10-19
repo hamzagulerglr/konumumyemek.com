@@ -1804,11 +1804,17 @@ private struct SecurePaymentRoom: View {
             VStack(alignment: .leading, spacing: 16) {
                     header
                     savedCardsSection
-                    if method.isMealCard {
-                        mealCardFields
+
+                    if showingNewCardForm || methodCards.isEmpty {
+                        if method.isMealCard {
+                            mealCardFields
+                        } else {
+                            bankCardFields
+                        }
                     } else {
-                        bankCardFields
+                        selectedSavedCardBanner
                     }
+
                     if !saveFeedback.isEmpty {
                         HStack(spacing: 6) {
                             Image(systemName: "checkmark.seal.fill")
@@ -1905,85 +1911,140 @@ private struct SecurePaymentRoom: View {
     }
 
     private var savedCardsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 HStack(spacing: 6) {
-                    Image(systemName: "creditcard.and.123")
+                    Image(systemName: showingNewCardForm ? "plus.rectangle.on.folder.fill" : "creditcard.and.123")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(KonumumTheme.neon)
-                    Text(L("KAYITLI KARTLARIM (\(methodCards.count))", "SAVED CARDS (\(methodCards.count))"))
-                        .font(.system(size: 11, weight: .bold))
-                        .tracking(0.8)
-                        .foregroundStyle(Color.white.opacity(0.78))
+                    Text(
+                        showingNewCardForm && !methodCards.isEmpty
+                        ? L("YENİ KART TANIMLA", "ADD NEW CARD")
+                        : L("KAYITLI KARTLARIM (\(methodCards.count))", "SAVED CARDS (\(methodCards.count))")
+                    )
+                    .font(.system(size: 11, weight: .bold))
+                    .tracking(0.8)
+                    .foregroundStyle(Color.white.opacity(0.78))
                 }
                 Spacer()
-                Button {
-                    withAnimation(.snappy) {
-                        clearFormForNewCard()
+                if !methodCards.isEmpty {
+                    Button {
+                        withAnimation(.snappy) {
+                            if showingNewCardForm {
+                                autoSelectDefaultCard()
+                            } else {
+                                clearFormForNewCard()
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: showingNewCardForm ? "creditcard.fill" : "plus.circle.fill")
+                            Text(showingNewCardForm ? L("Kayıtlı Kartlarım", "Saved Cards") : L("Yeni Kart Ekle", "Add New Card"))
+                        }
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(KonumumTheme.ink)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(KonumumTheme.neon, in: Capsule())
                     }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus.circle.fill")
-                        Text(L("Yeni Kart", "New Card"))
-                    }
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(KonumumTheme.neon)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(KonumumTheme.neon.opacity(0.14), in: Capsule())
+                    .buttonStyle(KonumumPressStyle())
                 }
-                .buttonStyle(KonumumPressStyle())
             }
 
-            if methodCards.isEmpty {
-                HStack(spacing: 10) {
-                    Image(systemName: "sparkles.rectangle.stack")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(KonumumTheme.neon)
-                    Text(
-                        L(
-                            "Aşağıdan kart bilgilerini girip \"Kartı Ekle\" butonuna basarak birden fazla kart kaydedebilir, sonraki siparişlerde tek dokunuşla seçebilirsiniz.",
-                            "Enter your card details below and tap \"Add Card\" to save multiple cards for one-tap selection on future orders."
-                        )
-                    )
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(0.65))
+            if !showingNewCardForm && !methodCards.isEmpty {
+                VStack(spacing: 10) {
+                    ForEach(methodCards) { card in
+                        savedCardTile(card)
+                    }
+                }
+            }
+        }
+    }
+
+    private var selectedSavedCardBanner: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if method.isMealCard {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(L("Yemek Kartı Bakiyesi", "Meal Card Balance"))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.white.opacity(0.62))
+                        Text(balanceVisible ? "450,00 TL" : "•••,•• TL")
+                            .font(.system(size: 17, weight: .heavy))
+                            .foregroundStyle(paidGreen)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.snappy) { balanceVisible.toggle() }
+                    } label: {
+                        Text(balanceVisible ? L("Gizle", "Hide") : L("Bakiye Gör", "Show Balance"))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(KonumumTheme.neon)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(KonumumTheme.neon.opacity(0.14), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(methodCards) { card in
-                            savedCardTile(card)
-                        }
-                    }
-                    .padding(.vertical, 2)
-                }
+            }
+
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark.shield.fill")
+                    .font(.system(size: 16, weight: .bold))
+                Text(
+                    L(
+                        "Kayıtlı kartınız seçildi. Tekrar kart bilgisi veya güvenlik kodu (CVV) girmeden doğrudan ödemeyi tamamlayabilirsiniz.",
+                        "Your saved card is selected. Complete payment with one tap without re-entering card details or CVV."
+                    )
+                )
+                .font(.system(size: 12.5, weight: .semibold))
+            }
+            .foregroundStyle(paidGreen)
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(paidGreen.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(paidGreen.opacity(0.32), lineWidth: 1)
             }
         }
     }
 
     private func savedCardTile(_ card: KonumumSavedCard) -> some View {
         let isSelected = selectedCardId == card.id
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "creditcard.fill")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(isSelected ? KonumumTheme.neon : Color.white.opacity(0.65))
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(isSelected ? KonumumTheme.neon : Color.white.opacity(0.45))
                 Text(card.alias)
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                 Spacer(minLength: 4)
                 if card.isDefault {
                     Text(L("Varsayılan", "Default"))
-                        .font(.system(size: 9, weight: .heavy))
+                        .font(.system(size: 10, weight: .heavy))
                         .foregroundStyle(KonumumTheme.ink)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
                         .background(KonumumTheme.neon, in: Capsule())
+                } else {
+                    Button {
+                        withAnimation(.snappy) {
+                            setDefaultSavedCard(card.id)
+                        }
+                    } label: {
+                        Text(L("Varsayılan Yap", "Set Default"))
+                            .font(.system(size: 10.5, weight: .bold))
+                            .foregroundStyle(KonumumTheme.neon)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(KonumumTheme.neon.opacity(0.14), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
                 Button {
                     withAnimation(.snappy) {
@@ -1991,46 +2052,34 @@ private struct SecurePaymentRoom: View {
                     }
                 } label: {
                     Image(systemName: "trash")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Color.white.opacity(0.55))
-                        .padding(5)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color.white.opacity(0.6))
+                        .padding(6)
                         .background(Color.white.opacity(0.08), in: Circle())
                 }
                 .buttonStyle(.plain)
             }
 
             Text(card.maskedPAN)
-                .font(KonumumFont.plate(13))
+                .font(KonumumFont.plate(16))
+                .tracking(1.4)
                 .foregroundStyle(isSelected ? KonumumTheme.neon : .white)
 
             HStack {
-                Text(method.isMealCard ? method.title : (card.holder.isEmpty ? card.networkLabel : card.holder))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(0.65))
+                Text(method.isMealCard ? method.title : (card.holder.isEmpty ? card.networkLabel : "\(card.holder) · \(card.networkLabel)"))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.white.opacity(0.7))
                     .lineLimit(1)
                 Spacer()
                 if !card.expiryMonth.isEmpty && !card.expiryYear.isEmpty {
-                    Text("\(card.expiryMonth)/\(card.expiryYear)")
-                        .font(KonumumFont.plate(11))
-                        .foregroundStyle(Color.white.opacity(0.75))
+                    Text("SKT \(card.expiryMonth)/\(card.expiryYear)")
+                        .font(KonumumFont.plate(12))
+                        .foregroundStyle(Color.white.opacity(0.8))
                 }
-            }
-
-            if !card.isDefault {
-                Button {
-                    withAnimation(.snappy) {
-                        setDefaultSavedCard(card.id)
-                    }
-                } label: {
-                    Text(L("Varsayılan Yap", "Set Default"))
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(KonumumTheme.neon)
-                }
-                .buttonStyle(.plain)
             }
         }
-        .padding(12)
-        .frame(width: 215, alignment: .leading)
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(isSelected ? KonumumTheme.neon.opacity(0.14) : Color.white.opacity(0.05))
@@ -2386,9 +2435,10 @@ private struct SecurePaymentRoom: View {
         }
         if cvv.filter(\.isNumber).isEmpty { cvv = "000" }
         if otp.filter(\.isNumber).isEmpty { otp = "000000" }
+        showingNewCardForm = false
         dismissKeyboard()
         persistSavedCards()
-        saveFeedback = L("Kart kaydedildi! Kayıtlı kartlarınızdan tek dokunuşla seçebilirsiniz.", "Card saved! You can select it with one tap.")
+        saveFeedback = L("Kart kaydedildi ve seçildi! Doğrudan ödemeyi tamamlayabilirsiniz.", "Card saved and selected! You can complete payment directly.")
     }
 
     private func deleteSavedCard(_ id: String) {
