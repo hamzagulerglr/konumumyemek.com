@@ -89,21 +89,21 @@
           <input id="regBranchTitle" placeholder="Örn: Atakum Sahil Şubesi" autocomplete="off" />
         </div>
         <div>
-          <label>RESMİ TİCARİ ÜNVAN (FATURA / HAKEDİŞ) *</label>
+          <label>RESMİ TİCARİ ÜNVAN (FATURA / HAKEDİŞ — SONRADAN GİRİLEBİLİR)</label>
           <input id="regOfficialTitle" placeholder="Örn: Lezzet Gıda İşletmeleri A.Ş." autocomplete="off" />
         </div>
       </div>
       <div class="grid2" style="gap:10px">
         <div>
-          <label>VERGİ DAİRESİ *</label>
+          <label>VERGİ DAİRESİ (SONRADAN GİRİLEBİLİR)</label>
           <input id="regTaxOffice" placeholder="Örn: 19 Mayıs V.D. / Gaziler V.D." autocomplete="off" />
         </div>
         <div>
-          <label>VERGİ KİMLİK NO (VKN 10 / TCKN 11 HANE) *</label>
+          <label>VERGİ KİMLİK NO (VKN 10 / TCKN 11 HANE — SONRADAN GİRİLEBİLİR)</label>
           <input id="regTaxNumber" maxlength="11" inputmode="numeric" placeholder="10 haneli VKN veya 11 haneli TCKN" autocomplete="off" />
         </div>
       </div>
-      <label>HAKEDİŞ BANKA IBAN (TR · 26 KARAKTER) *</label>
+      <label>HAKEDİŞ BANKA IBAN (TR · 26 KARAKTER — PROFİLDEN SONRADAN GİRİLEBİLİR)</label>
       <input id="regIban" maxlength="32" placeholder="TR00 0000 0000 0000 0000 0000 00" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.6px" />
       <div class="grid2" style="gap:10px">
         <div>
@@ -111,7 +111,7 @@
           <input id="regEmail" type="email" placeholder="ornek@isletme.com" autocomplete="off" />
         </div>
         <div>
-          <label>ŞUBE TELEFONU *</label>
+          <label>ŞUBE TELEFONU</label>
           <input id="regPhone" placeholder="+90 5XX XXX XX XX" autocomplete="off" />
         </div>
       </div>
@@ -135,7 +135,7 @@
           <input id="regHours" value="09:00-23:00" placeholder="09:00-23:00" autocomplete="off" />
         </div>
       </div>
-      <label>AÇIK ADRES (ARAÇ TESLİM NOKTASI) *</label>
+      <label>AÇIK ADRES (ARAÇ TESLİM NOKTASI — SONRADAN GİRİLEBİLİR)</label>
       <input id="regAddress" placeholder="İl, ilçe, mahalle, cadde ve kapı no bilgisi" autocomplete="off" />
       <div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(58,241,215,.22);display:flex;flex-direction:column;gap:6px">
         <label class="toggle" style="color:var(--neon);font-weight:700;margin:0"><input id="regKvkkOk" type="checkbox" checked style="accent-color:#3AF1D7" /> 6698 sayılı KVKK Aydınlatma Metni ve Veri İşleyen Sözleşmesini okudum, kabul ediyorum.</label>
@@ -145,6 +145,32 @@
       <div class="err" id="regErr"></div>
       <div class="ok" id="regOk"></div>
       <button class="primary" id="registerBtn" type="button">Üye Ol ve Panele Gir</button>
+    </div>
+
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div class="note" style="margin:0;font-size:12px">
+        📧 Kurumsal İletişim &amp; Destek: <a href="mailto:info@konumumyemek.com" style="color:var(--neon);font-weight:800;text-decoration:underline">info@konumumyemek.com</a>
+      </div>
+      <button type="button" class="chip" id="openSupportBtn" style="font-size:11px;padding:6px 12px;border-color:rgba(58,241,215,.5);color:var(--neon);font-weight:700">💬 Bize Ulaşın / Destek Talebi</button>
+    </div>
+    <div id="supportModal" class="hidden" style="margin-top:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(58,241,215,.35)">
+      <b style="color:var(--neon);font-size:13px">💬 Konumum Genel Merkez Destek &amp; İletişim Formu</b>
+      <p class="note" style="margin:4px 0 8px 0">Mesajınız doğrudan Genel Merkez yönetim ekranımıza ve <b>info@konumumyemek.com</b> adresimize iletilir.</p>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <label>İŞLETME VEYA ADINIZ SOYADINIZ *</label>
+          <input id="supName" placeholder="Örn: Atakum Burger / Ahmet Yılmaz" />
+        </div>
+        <div>
+          <label>İLETİŞİM (TELEFON VEYA E-POSTA) *</label>
+          <input id="supContact" placeholder="05XX XXX XX XX veya e-posta" />
+        </div>
+      </div>
+      <label>MESAJINIZ VEYA TALEBİNİZ *</label>
+      <input id="supMsg" placeholder="Üyelik, POS/hakediş veya teknik destek talebinizi yazın..." />
+      <div class="err" id="supErr"></div>
+      <div class="ok" id="supOk"></div>
+      <button type="button" class="primary" id="sendSupportBtn" style="margin-top:8px;height:42px;font-size:13px">Mesajı Genel Merkeze Gönder</button>
     </div>
   </section>
 
@@ -193,10 +219,11 @@
       <div id="menuPane" class="hidden"></div>
       <div id="campaignsPane" class="hidden"></div>
       <div id="reportsPane" class="hidden"></div>
+      <div id="hqPane" class="hidden"></div>
       <div id="profilePane" class="hidden"></div>
       <div id="legalPane" class="hidden"></div>
     </div>
   </section>
-  <script src="app.js?v=20261018-audit1"></script>
+  <script src="app.js?v=20261019-hq1"></script>
 </body>
 </html>
