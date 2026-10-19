@@ -911,17 +911,13 @@ struct OrderPaymentView: View {
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.white)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach([
-                        MealPayment.metropol, .sodexo, .multinet, .setcard,
-                        .ticket, .card, .applePay, .googlePay, .nakit
-                    ]) { method in
-                        paymentButton(method)
-                            .frame(width: 82)
-                    }
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                ForEach([
+                    MealPayment.metropol, .sodexo, .multinet,
+                    .setcard, .ticket, .card
+                ]) { method in
+                    paymentButton(method)
                 }
-                .padding(.vertical, 2)
             }
 
             if attemptedSend && payment == nil {
@@ -1504,69 +1500,54 @@ private enum RestaurantBrand: Hashable, Identifiable {
 }
 
 private enum MealPayment: String, CaseIterable, Identifiable {
-    case applePay
-    case googlePay
     case card
     case sodexo
     case multinet
     case setcard
     case metropol
     case ticket
-    case nakit
 
     var id: String { rawValue }
 
     var isMealCard: Bool { [.sodexo, .multinet, .setcard, .metropol, .ticket].contains(self) }
-    var isWallet: Bool { self == .applePay || self == .googlePay }
-    var isCash: Bool { self == .nakit }
 
     var title: String {
         switch self {
-        case .applePay: "Apple Pay"
-        case .googlePay: "Google Pay"
         case .card: "Kart · Visa Mastercard Troy"
         case .sodexo: "Sodexo"
         case .multinet: "Multinet"
         case .setcard: "Setcard"
         case .metropol: "Metropol Card"
         case .ticket: "Ticket Restaurant"
-        case .nakit: "Nakit"
         }
     }
 
     var directoryBrand: MealCardBrand {
         switch self {
-        case .applePay: .applePay
-        case .googlePay: .googlePay
         case .sodexo: .sodexo
         case .multinet: .multinet
         case .setcard: .setcard
         case .metropol: .metropol
         case .ticket: .ticket
-        case .nakit: .nakit
         case .card: .krediKarti
         }
     }
 
     var fill: Color {
         switch self {
-        case .applePay: .black
-        case .googlePay: Color.white
         case .sodexo: Color(red: 0.894, green: 0.094, blue: 0.141)
         case .multinet: Color(red: 0.000, green: 0.306, blue: 0.690)
         case .setcard: Color(red: 0.227, green: 0.639, blue: 0.196)
         case .metropol: Color(red: 1.0, green: 0.08, blue: 0.22)
         case .ticket: Color(red: 0.55, green: 0.08, blue: 0.18)
         case .card: Color(red: 0.16, green: 0.18, blue: 0.23)
-        case .nakit: Color(red: 0.07, green: 0.28, blue: 0.18)
         }
     }
 
     var glow: Color {
         switch self {
         case .metropol: Color(red: 1.0, green: 0.15, blue: 0.28)
-        case .applePay, .card: KonumumTheme.neon
-        case .nakit: Color(red: 0.22, green: 0.95, blue: 0.48)
+        case .card: KonumumTheme.neon
         default: fill
         }
     }
@@ -1574,17 +1555,6 @@ private enum MealPayment: String, CaseIterable, Identifiable {
     @ViewBuilder
     var mark: some View {
         switch self {
-        case .applePay:
-            HStack(spacing: 6) {
-                Image(systemName: "applelogo")
-                Text("Pay")
-            }
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundStyle(.white)
-        case .googlePay:
-            Text("G Pay")
-                .font(.system(size: 15, weight: .heavy, design: .rounded))
-                .foregroundStyle(Color(red: 0.12, green: 0.12, blue: 0.14))
         case .sodexo:
             Text("sodexo")
                 .font(.system(size: 11, weight: .heavy, design: .rounded))
@@ -1608,7 +1578,7 @@ private enum MealPayment: String, CaseIterable, Identifiable {
                 Text("Metropol")
                 Text("Card")
             }
-            .font(.system(size: 8, weight: .heavy, design: .rounded))
+            .font(.system(size: 9, weight: .heavy, design: .rounded))
             .foregroundStyle(.white)
             .shadow(color: Color(red: 1, green: 0.35, blue: 0.4), radius: 4)
             .minimumScaleFactor(0.6)
@@ -1627,10 +1597,6 @@ private enum MealPayment: String, CaseIterable, Identifiable {
                     .font(.system(size: 8, weight: .bold))
                     .foregroundStyle(KonumumTheme.neon)
             }
-        case .nakit:
-            Text("Nakit")
-                .font(.system(size: 13, weight: .heavy))
-                .foregroundStyle(Color(red: 0.22, green: 0.95, blue: 0.48))
         }
     }
 }
@@ -1733,7 +1699,6 @@ private struct SecurePaymentRoom: View {
 
     private var canPay: Bool {
         guard cartTotal > 0 else { return false }
-        if method.isWallet || method.isCash { return true }
         guard panReady else { return false }
         if method.isMealCard { return otpReady }
         return holderReady && expiryReady && cvvReady && secure3D
@@ -1743,14 +1708,8 @@ private struct SecurePaymentRoom: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                     header
-                    if !method.isWallet && !method.isCash {
-                        savedCardsSection
-                    }
-                    if method.isWallet {
-                        walletFields
-                    } else if method.isCash {
-                        cashFields
-                    } else if method.isMealCard {
+                    savedCardsSection
+                    if method.isMealCard {
                         mealCardFields
                     } else {
                         bankCardFields
@@ -1801,9 +1760,7 @@ private struct SecurePaymentRoom: View {
                     .background(method.fill, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 VStack(alignment: .leading, spacing: 4) {
                     Text(
-                        method.isWallet ? L("Cüzdan ile güvenli ödeme", "Secure Wallet Payment")
-                        : method.isCash ? L("Gişede nakit teslim", "Cash at Window")
-                        : method.isMealCard ? L("Güvenli Mobil Ödeme", "Secure Mobile Payment")
+                        method.isMealCard ? L("Güvenli Mobil Ödeme", "Secure Mobile Payment")
                         : L("Kredi / Banka Kartı ile Güvenli Ödeme", "Secure Credit / Debit Card Payment")
                     )
                         .font(.system(size: 18, weight: .bold))
@@ -1827,37 +1784,6 @@ private struct SecurePaymentRoom: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(method.fill.opacity(method.isMealCard ? 0.22 : 0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-    }
-
-    private var walletFields: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "faceid")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(KonumumTheme.neon)
-                Text(L("PCI DSS cüzdan · kart verisi cihazda kalır. 3D Secure gerekmez.", "PCI DSS wallet · card details stay on device."))
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(0.72))
-            }
-            Text(L("Apple Pay / Google Pay uluslararası standart; Türkiye'de iyzico 3D Secure kart akışının yanında durur.", "International Apple Pay / Google Pay standard alongside 3D Secure card checkout."))
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color.white.opacity(0.5))
-        }
-        .padding(14)
-        .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-
-    private var cashFields: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(L("Araç gişeye geldiğinde nakit alınır. Min tutar yok.", "Pay cash at the pickup window. No minimum order."))
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.white)
-            Text(L("Nakit gişede alınır. Bu ekran simülasyondur; gerçek tahsilat yok.", "Simulated payment screen; no real charge is made."))
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color.white.opacity(0.55))
-        }
-        .padding(14)
-        .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private var savedCardsSection: some View {

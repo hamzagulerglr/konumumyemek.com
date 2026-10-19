@@ -2,14 +2,11 @@ import Foundation
 import SwiftUI
 
 enum MealCardBrand: String, CaseIterable, Identifiable, Hashable, Codable {
-    case applePay = "Apple Pay"
-    case googlePay = "Google Pay"
     case sodexo = "Sodexo"
     case multinet = "Multinet"
     case setcard = "Setcard"
     case metropol = "Metropol Card"
     case ticket = "Ticket Restaurant"
-    case nakit = "Nakit"
     case krediKarti = "Kredi Kartı"
 
     var id: String { rawValue }
@@ -569,7 +566,7 @@ final class KonumumDirectory: ObservableObject {
         for delivery in restaurantDeliveries(for: account) where delivery.delivered {
             bucket[delivery.payment, default: 0] += delivery.total
         }
-        return [MealCardBrand.sodexo, .metropol, .nakit, .krediKarti].map { brand in
+        return [MealCardBrand.sodexo, .metropol, .multinet, .setcard, .ticket, .krediKarti].map { brand in
             (brand, bucket[brand] ?? 0)
         }
     }

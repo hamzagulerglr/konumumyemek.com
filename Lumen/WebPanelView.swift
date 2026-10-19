@@ -195,7 +195,7 @@ struct WebPanelView: View {
                     )
                 }
 
-                Text("Ciro Dağılımı (Sodexo / Metropol / Nakit / Kart)")
+                Text("Ciro Dağılımı (Yemek Kartları & Kredi Kartı)")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
 
@@ -549,14 +549,11 @@ private struct CustomerDashboardView: View {
 
     private func cardFill(_ brand: MealCardBrand) -> Color {
         switch brand {
-        case .applePay: .black
-        case .googlePay: Color.white
         case .sodexo: Color(red: 0.894, green: 0.094, blue: 0.141)
         case .multinet: Color(red: 0.000, green: 0.306, blue: 0.690)
         case .setcard: Color(red: 0.227, green: 0.639, blue: 0.196)
         case .metropol: Color(red: 1.0, green: 0.08, blue: 0.22)
         case .ticket: Color(red: 0.55, green: 0.08, blue: 0.18)
-        case .nakit: Color.white.opacity(0.16)
         case .krediKarti: Color(red: 0.16, green: 0.18, blue: 0.23)
         }
     }
