@@ -220,6 +220,16 @@ struct SiparislerimView: View {
                     .frame(height: 36)
                     .background(KonumumProximity.door.tint, in: Capsule())
             }
+            if order.isOpen {
+                Button(L("Teslim Aldım", "Collected")) {
+                    directory.confirmCustomerCollected(deliveryId: order.id, plate: order.plate)
+                }
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundStyle(KonumumTheme.ink)
+                .padding(.horizontal, 12)
+                .frame(height: 36)
+                .background(Color(red: 0.22, green: 0.95, blue: 0.48), in: Capsule())
+            }
         }
     }
 

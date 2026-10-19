@@ -528,24 +528,41 @@ struct OrderPaymentView: View {
 
     private func restaurantDetail(_ brand: RestaurantBrand) -> some View {
         VStack(spacing: 0) {
-            HStack(alignment: .center, spacing: 10) {
-                Text(
-                    orderReceived ? L("Sipariş Alındı", "Order Received")
-                    : paymentRoom != nil ? L("Kart bilgileri", "Card Details")
-                    : atPayment ? L("Ödeme", "Payment")
-                    : brand.name
-                )
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-
+            HStack(spacing: 10) {
+                backButton(
+                    orderReceived ? L("Ana sayfa", "Home")
+                    : paymentRoom != nil ? L("Ödeme", "Payment")
+                    : atPayment ? L("Menü", "Menu")
+                    : L("Restoranlar", "Restaurants")
+                ) {
+                    if orderReceived {
+                        goMenusHome()
+                    } else if paymentRoom != nil {
+                        paymentRoom = nil
+                    } else if atPayment {
+                        atPayment = false
+                    } else {
+                        lastRestaurant = restaurant
+                        restaurant = nil
+                    }
+                }
                 Spacer()
                 KonumumLangToggle()
                 brand.emblem
                     .frame(width: 36, height: 36)
             }
-            .padding(.top, 12)
+            .padding(.top, 8)
+
+            Text(
+                orderReceived ? L("Sipariş Alındı", "Order Received")
+                : paymentRoom != nil ? L("Kart bilgileri", "Card Details")
+                : atPayment ? L("Ödeme", "Payment")
+                : brand.name
+            )
+            .font(.system(size: 26, weight: .bold))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 14)
 
             if !atPayment {
                 let open = isBrandOpen(brand)
@@ -1202,36 +1219,6 @@ struct OrderPaymentView: View {
                     .frame(height: 54)
                     .background(Color(red: 0.22, green: 0.95, blue: 0.48), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .shadow(color: Color(red: 0.22, green: 0.95, blue: 0.48).opacity(0.65), radius: 10)
-                }
-                .buttonStyle(KonumumPressStyle())
-
-                NavigationLink {
-                    SurucuNavigasyonCarPlayView(
-                        route: CarConsoleRoute(
-                            deliveryId: placedOrderId,
-                            restaurantName: brand.name,
-                            destinationTitle: brand.destinationTitle,
-                            plate: plate,
-                            paymentTitle: paid,
-                            lines: cartRows(of: brand).map {
-                                KitchenOrderLine(name: $0.displayName, quantity: $0.qty, unitPrice: $0.unitPrice)
-                            }
-                        )
-                    )
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "display")
-                        Text(L("Yatay Araç Konsol Ekranını Aç", "Open Landscape Car Console"))
-                    }
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(KonumumTheme.neon.opacity(0.45), lineWidth: 1)
-                    }
                 }
                 .buttonStyle(KonumumPressStyle())
 

@@ -449,12 +449,24 @@ final class KonumumDirectory: ObservableObject {
                 }
                 if status != prevStatus && isOwnOrder(deliveries[index]) {
                     let isEN = KonumumLanguage.isEN
+                    let restName = restaurants.first(where: { $0.id == deliveries[index].restaurantId })?.brandName ?? "Restoran"
                     if status == "kabul" {
                         kitchenBannerKind = "prep"
                         kitchenBannerText = isEN
                             ? "👨‍🍳 Kitchen accepted your order · Now preparing!"
                             : "👨‍🍳 Siparişiniz mutfağa alındı · Hazırlanıyor!"
                         kitchenStatusText = isEN ? "Preparing Your Order" : "Siparişiniz Hazırlanıyor"
+                        KonumumCarPlayNotifier.shared.notifyDriver(
+                            title: isEN ? "👨‍🍳 Order Accepted by Kitchen" : "👨‍🍳 Sipariş Mutfağa Alındı",
+                            body: isEN
+                                ? "\(restName) is preparing your order (\(deliveries[index].plate)). Tap 'I'm Here' or 'Collected' directly from CarPlay."
+                                : "\(restName) siparişinizi hazırlıyor (\(deliveries[index].plate)). Araç ekranından 'Kapıdayım' veya 'Teslim Aldım' seçebilirsiniz.",
+                            orderId: deliveries[index].id,
+                            plate: deliveries[index].plate,
+                            speakText: isEN
+                                ? "Your order at \(restName) has been accepted by the kitchen and is now being prepared."
+                                : "\(restName) siparişiniz mutfağa alındı ve hazırlanıyor."
+                        )
                     } else if status == "hazir" {
                         readyNotice = true
                         kitchenBannerKind = "ready"
@@ -464,6 +476,17 @@ final class KonumumDirectory: ObservableObject {
                         kitchenStatusText = isEN
                             ? "Order Ready · Waiting at Pickup Window"
                             : "Paketiniz Hazır · Teslim Penceresinde Bekleniyor"
+                        KonumumCarPlayNotifier.shared.notifyDriver(
+                            title: isEN ? "🍔 Your Order is Ready!" : "🍔 Siparişiniz Hazır!",
+                            body: isEN
+                                ? "Approach the pickup window at \(restName). Tap 'I'm Here' or 'Collected' on CarPlay."
+                                : "\(restName) teslim noktasına yanaşabilirsiniz. Araç ekranından 'Kapıdayım' veya 'Yemeği Teslim Aldım' diyebilirsiniz.",
+                            orderId: deliveries[index].id,
+                            plate: deliveries[index].plate,
+                            speakText: isEN
+                                ? "Your order is ready! Please approach the pickup window."
+                                : "Siparişiniz hazır! Teslim penceresine yanaşabilirsiniz."
+                        )
                     } else if status == "iptal" {
                         let reasonText = deliveries[index].cancelReason.isEmpty
                             ? (isEN ? "Canceled by restaurant" : "Restoran tarafından iptal edildi")
@@ -472,11 +495,27 @@ final class KonumumDirectory: ObservableObject {
                         kitchenBannerText = isEN
                             ? "⚠️ Order Canceled: \(reasonText)"
                             : "⚠️ Sipariş İptal Edildi: \(reasonText)"
+                        KonumumCarPlayNotifier.shared.notifyDriver(
+                            title: isEN ? "⚠️ Order Canceled" : "⚠️ Sipariş İptal Edildi",
+                            body: reasonText,
+                            orderId: deliveries[index].id,
+                            plate: deliveries[index].plate,
+                            speakText: isEN
+                                ? "Your order was canceled. \(reasonText)"
+                                : "Siparişiniz iptal edildi. \(reasonText)"
+                        )
                     } else if status == "teslim" {
                         kitchenBannerKind = "ready"
                         kitchenBannerText = isEN
                             ? "✅ Order handed through car window · Enjoy!"
                             : "✅ Paketiniz araç camından teslim edildi · Afiyet olsun!"
+                        KonumumCarPlayNotifier.shared.notifyDriver(
+                            title: isEN ? "✅ Order Delivered" : "✅ Sipariş Teslim Edildi",
+                            body: isEN ? "Enjoy your meal!" : "Paketiniz araç camından teslim edildi. Afiyet olsun!",
+                            orderId: deliveries[index].id,
+                            plate: deliveries[index].plate,
+                            speakText: isEN ? "Order delivered. Enjoy your meal!" : "Siparişiniz teslim edildi. Afiyet olsun!"
+                        )
                     }
                 }
                 if let lane = row.lane { deliveries[index].lane = lane }
@@ -636,6 +675,18 @@ final class KonumumDirectory: ObservableObject {
                 paymentTitle: payment.rawValue,
                 lines: lines
             )
+        )
+        let isEN = KonumumLanguage.isEN
+        KonumumCarPlayNotifier.shared.notifyDriver(
+            title: isEN ? "📡 Order Sent to \(restaurant.brandName)" : "📡 Sipariş Mutfağa İletildi (\(restaurant.brandName))",
+            body: isEN
+                ? "Plate \(plate) · Live tracking active. Use CarPlay banner actions when you arrive."
+                : "Plaka \(plate) · Canlı takip başladı. Restorana vardığınızda araç ekranından 'Kapıdayım' veya 'Teslim Aldım' diyebilirsiniz.",
+            orderId: id,
+            plate: plate,
+            speakText: isEN
+                ? "Your order has been sent to \(restaurant.brandName). Live tracking started."
+                : "\(restaurant.brandName) siparişiniz mutfağa iletildi. Canlı takip başladı."
         )
         return id
     }
@@ -821,6 +872,19 @@ final class KonumumDirectory: ObservableObject {
             if self.liveMeters == 0 {
                 self.kitchenStatusText = "Teslim Noktasında"
                 KonumumLocation.shared.stop()
+                let isEN = KonumumLanguage.isEN
+                let plate = self.liveRoute?.plate ?? "34 KNM 55"
+                KonumumCarPlayNotifier.shared.notifyDriver(
+                    title: isEN ? "🚗 Arrived at Pickup Point (0m)" : "🚗 Teslim Noktasına Vardınız (0 m)",
+                    body: isEN
+                        ? "Tap 'I'm Here' or 'Collected' directly on CarPlay."
+                        : "Araç ekranından 'Kapıdayım' veya 'Yemeği Teslim Aldım' butonuna dokunabilirsiniz.",
+                    orderId: self.liveDeliveryId,
+                    plate: plate,
+                    speakText: isEN
+                        ? "You have arrived at the pickup window."
+                        : "Teslim noktasına vardınız. Paketiniz araç camından teslim ediliyor."
+                )
             }
         }
         pushLiveLocation()
@@ -837,6 +901,19 @@ final class KonumumDirectory: ObservableObject {
                 if liveMeters == 0 {
                     kitchenStatusText = "Teslim Noktasında"
                     KonumumLocation.shared.stop()
+                    let isEN = KonumumLanguage.isEN
+                    let plate = self.liveRoute?.plate ?? "34 KNM 55"
+                    KonumumCarPlayNotifier.shared.notifyDriver(
+                        title: isEN ? "🚗 Arrived at Pickup Point (0m)" : "🚗 Teslim Noktasına Vardınız (0 m)",
+                        body: isEN
+                            ? "Tap 'I'm Here' or 'Collected' directly on CarPlay."
+                            : "Araç ekranından 'Kapıdayım' veya 'Yemeği Teslim Aldım' butonuna dokunabilirsiniz.",
+                        orderId: self.liveDeliveryId,
+                        plate: plate,
+                        speakText: isEN
+                            ? "You have arrived at the pickup window."
+                            : "Teslim noktasına vardınız. Paketiniz araç camından teslim ediliyor."
+                    )
                 }
             }
         }
