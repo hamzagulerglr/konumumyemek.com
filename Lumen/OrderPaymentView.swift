@@ -1121,8 +1121,18 @@ struct OrderPaymentView: View {
         )
     }
 
+    private func openRestaurantInCarPlayMaps(latitude: Double, longitude: Double, name: String) {
+        let encodedName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Restoran"
+        if let appleMapsURL = URL(string: "http://maps.apple.com/?daddr=\(latitude),\(longitude)&dirflg=d&q=\(encodedName)") {
+            UIApplication.shared.open(appleMapsURL)
+        }
+    }
+
     private func orderReceivedPage(_ brand: RestaurantBrand) -> some View {
         let placed = directory.deliveries.first(where: { $0.id == placedOrderId })
+        let venue = venueAccount(for: brand)
+        let lat = venue?.mapLatitude ?? 41.2867
+        let lon = venue?.mapLongitude ?? 36.3300
         let plate = placed?.plate ?? profile.plates.first ?? "34 KNM 55"
         let paid = payment?.title ?? placed?.payment.rawValue ?? "Kart"
         return ScrollView {
@@ -1178,6 +1188,52 @@ struct OrderPaymentView: View {
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                Button {
+                    openRestaurantInCarPlayMaps(latitude: lat, longitude: lon, name: brand.destinationTitle)
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "car.fill")
+                        Text(L("Araç Ekranında (CarPlay) Rotayı Başlat", "Start Route on CarPlay Display"))
+                    }
+                    .font(.system(size: 16, weight: .heavy))
+                    .foregroundStyle(KonumumTheme.ink)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 54)
+                    .background(Color(red: 0.22, green: 0.95, blue: 0.48), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .shadow(color: Color(red: 0.22, green: 0.95, blue: 0.48).opacity(0.65), radius: 10)
+                }
+                .buttonStyle(KonumumPressStyle())
+
+                NavigationLink {
+                    SurucuNavigasyonCarPlayView(
+                        route: CarConsoleRoute(
+                            deliveryId: placedOrderId,
+                            restaurantName: brand.name,
+                            destinationTitle: brand.destinationTitle,
+                            plate: plate,
+                            paymentTitle: paid,
+                            lines: cartRows(of: brand).map {
+                                KitchenOrderLine(name: $0.displayName, quantity: $0.qty, unitPrice: $0.unitPrice)
+                            }
+                        )
+                    )
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "display")
+                        Text(L("Yatay Araç Konsol Ekranını Aç", "Open Landscape Car Console"))
+                    }
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(KonumumTheme.neon.opacity(0.45), lineWidth: 1)
+                    }
+                }
+                .buttonStyle(KonumumPressStyle())
 
                 Button {
                     quantities = [:]

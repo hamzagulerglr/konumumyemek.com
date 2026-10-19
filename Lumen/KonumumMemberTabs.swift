@@ -189,7 +189,29 @@ struct SiparislerimView: View {
 
     @ViewBuilder
     private func driveButtons(_ order: KonumumDelivery) -> some View {
+        let rest = directory.restaurants.first(where: { $0.id == order.restaurantId })
         HStack(spacing: 8) {
+            if order.isOpen {
+                Button {
+                    let lat = rest?.mapLatitude ?? 41.2867
+                    let lon = rest?.mapLongitude ?? 36.3300
+                    let name = (rest?.branchTitle ?? "Restoran").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Restoran"
+                    if let url = URL(string: "http://maps.apple.com/?daddr=\(lat),\(lon)&dirflg=d&q=\(name)") {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "car.fill")
+                        Text(L("CarPlay Rota", "CarPlay Route"))
+                    }
+                    .font(.system(size: 12, weight: .heavy))
+                    .foregroundStyle(KonumumTheme.ink)
+                    .padding(.horizontal, 12)
+                    .frame(height: 36)
+                    .background(KonumumTheme.neon, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
             if order.isOpen, !order.atDoor {
                 Button(L("Kapıdayım", "I'm Here")) { directory.checkInAtDoor(id: order.id) }
                     .font(.system(size: 13, weight: .heavy))
