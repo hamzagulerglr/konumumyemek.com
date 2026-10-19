@@ -8,6 +8,7 @@ struct OrderPaymentView: View {
     @AppStorage(KonumumMemberStore.language) private var lang = "tr"
     @ObservedObject private var location = KonumumLocation.shared
     @State private var restaurant: RestaurantBrand?
+    @State private var lastRestaurant: RestaurantBrand?
     @State private var quantities: [String: Int] = [:]
     @State private var payment: MealPayment? = .metropol
     @State private var paymentRoom: MealPayment?
@@ -264,6 +265,43 @@ struct OrderPaymentView: View {
         .animation(.spring(response: 0.38, dampingFraction: 0.86), value: orderReceived)
         .animation(.spring(response: 0.32, dampingFraction: 0.86), value: paymentRoom)
         .animation(.snappy(duration: 0.22), value: total)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 28, coordinateSpace: .local)
+                .onEnded { value in
+                    handleHorizontalSwipe(value.translation)
+                }
+        )
+    }
+
+    private func handleHorizontalSwipe(_ translation: CGSize) {
+        let dx = translation.width
+        let dy = translation.height
+        guard abs(dx) > abs(dy) * 1.25, abs(dx) > 48 else { return }
+
+        if dx > 48 {
+            // Soldan sağa kaydırma -> Geri
+            if orderReceived {
+                goMenusHome()
+            } else if paymentRoom != nil {
+                paymentRoom = nil
+            } else if atPayment {
+                atPayment = false
+            } else if let current = restaurant {
+                lastRestaurant = current
+                restaurant = nil
+            }
+        } else if dx < -48 {
+            // Sağdan sola kaydırma -> İleri
+            if restaurant == nil, let prev = lastRestaurant {
+                restaurant = prev
+            } else if let brand = restaurant, !atPayment {
+                if isBrandOpen(brand) && total > 0 {
+                    atPayment = true
+                }
+            } else if restaurant != nil && atPayment && paymentRoom == nil && !orderReceived {
+                finishCheckout()
+            }
+        }
     }
 
     private func goMenusHome() {
@@ -410,15 +448,18 @@ struct OrderPaymentView: View {
                         let hours = brandHours(brand)
                         let busy = brandBusy(brand)
                         Button {
-                            quantities = [:]
-                            pickedVar = [:]
+                            if lastRestaurant != brand {
+                                quantities = [:]
+                                pickedVar = [:]
+                                couponOn = false
+                                couponCode = ""
+                            }
                             attemptedSend = false
                             atPayment = false
                             orderReceived = false
                             placedOrderId = nil
                             paymentRoom = nil
-                            couponOn = false
-                            couponCode = ""
+                            lastRestaurant = brand
                             restaurant = brand
                         } label: {
                             VStack(spacing: 6) {
@@ -487,44 +528,24 @@ struct OrderPaymentView: View {
 
     private func restaurantDetail(_ brand: RestaurantBrand) -> some View {
         VStack(spacing: 0) {
-            HStack(spacing: 10) {
-                backButton(
-                    orderReceived ? L("Ana sayfa", "Home")
-                    : paymentRoom != nil ? L("Ödeme", "Payment")
-                    : atPayment ? L("Menü", "Menu")
-                    : L("Restoranlar", "Restaurants")
-                ) {
-                    if orderReceived {
-                        goMenusHome()
-                    } else if paymentRoom != nil {
-                        paymentRoom = nil
-                    } else if atPayment {
-                        atPayment = false
-                    } else {
-                        quantities = [:]
-                        pickedVar = [:]
-                        couponOn = false
-                        couponCode = ""
-                        restaurant = nil
-                    }
-                }
+            HStack(alignment: .center, spacing: 10) {
+                Text(
+                    orderReceived ? L("Sipariş Alındı", "Order Received")
+                    : paymentRoom != nil ? L("Kart bilgileri", "Card Details")
+                    : atPayment ? L("Ödeme", "Payment")
+                    : brand.name
+                )
+                .font(.system(size: 26, weight: .bold))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
                 Spacer()
                 KonumumLangToggle()
                 brand.emblem
                     .frame(width: 36, height: 36)
             }
-            .padding(.top, 8)
-
-            Text(
-                orderReceived ? L("Sipariş Alındı", "Order Received")
-                : paymentRoom != nil ? L("Kart bilgileri", "Card Details")
-                : atPayment ? L("Ödeme", "Payment")
-                : brand.name
-            )
-            .font(.system(size: 26, weight: .bold))
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 14)
+            .padding(.top, 12)
 
             if !atPayment {
                 let open = isBrandOpen(brand)
@@ -879,11 +900,16 @@ struct OrderPaymentView: View {
             HStack(spacing: 8) {
                 TextField(L("Kupon", "Promo Code"), text: $couponCode)
                     .textInputAutocapitalization(.characters)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
                     .padding(.horizontal, 12)
                     .frame(height: 44)
                     .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .foregroundStyle(.white)
                 Button(L("Uygula", "Apply")) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     let entered = couponCode.trimmingCharacters(in: .whitespaces).uppercased()
                     if let matched = directory.webCampaigns.first(where: {
                         ($0.code ?? "KONUMUM20").uppercased() == entered &&
@@ -1625,6 +1651,7 @@ private struct KonumumSavedCard: Codable, Identifiable, Equatable {
     var panDigits: String
     var expiryMonth: String
     var expiryYear: String
+    var cvv: String? = nil
     var isDefault: Bool
 
     var last4: String {
@@ -1697,11 +1724,23 @@ private struct SecurePaymentRoom: View {
         return holderReady && expiryReady
     }
 
+    private var isUsingSavedCard: Bool {
+        guard let selectedCardId else { return false }
+        return methodCards.contains(where: { $0.id == selectedCardId })
+    }
+
     private var canPay: Bool {
         guard cartTotal > 0 else { return false }
         guard panReady else { return false }
-        if method.isMealCard { return otpReady }
-        return holderReady && expiryReady && cvvReady && secure3D
+        if method.isMealCard {
+            return isUsingSavedCard || otpReady
+        }
+        return holderReady && expiryReady && (isUsingSavedCard || cvvReady) && secure3D
+    }
+
+    private func dismissKeyboard() {
+        expiryPart = nil
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     var body: some View {
@@ -1724,7 +1763,7 @@ private struct SecurePaymentRoom: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     if attempted && !canPay {
-                        Text(cartTotal == 0 ? L("Menüden bir ürün ekleyin", "Add an item from the menu") : L("Eksik alanları tamamlayın (CVV / SMS kodunu kontrol edin)", "Please complete all required fields"))
+                        Text(cartTotal == 0 ? L("Menüden bir ürün ekleyin", "Add an item from the menu") : L("Eksik alanları tamamlayın", "Please complete all required fields"))
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(KonumumTheme.danger)
                             .frame(maxWidth: .infinity)
@@ -1745,6 +1784,29 @@ private struct SecurePaymentRoom: View {
         }
         .background(KonumumTheme.graphite.ignoresSafeArea())
         .scrollIndicators(.hidden)
+        .scrollDismissesKeyboard(.interactively)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(action: dismissKeyboard) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .heavy))
+                        Image(systemName: "keyboard.chevron.compact.down")
+                            .font(.system(size: 14, weight: .bold))
+                    }
+                    .foregroundStyle(KonumumTheme.ink)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(
+                        Color(red: 0.22, green: 0.95, blue: 0.48),
+                        in: Capsule()
+                    )
+                    .shadow(color: Color(red: 0.22, green: 0.95, blue: 0.48).opacity(0.65), radius: 6)
+                }
+                .buttonStyle(.plain)
+            }
+        }
         .onAppear(perform: loadSavedCards)
         .onChange(of: method) { _, _ in
             saveFeedback = ""
@@ -1997,16 +2059,25 @@ private struct SecurePaymentRoom: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             saveCardControlBar
-            labeled(L("SMS Doğrulama Şifresi (OTP)", "SMS Verification Code (OTP)"))
-            field(
-                Binding(
-                    get: { otp },
-                    set: { otp = String($0.filter(\.isNumber).prefix(6)) }
-                ),
-                placeholder: L("6 haneli kod", "6-digit code"),
-                mono: true
-            )
-            .keyboardType(.numberPad)
+            if !isUsingSavedCard {
+                labeled(L("SMS Doğrulama Şifresi (OTP)", "SMS Verification Code (OTP)"))
+                field(
+                    Binding(
+                        get: { otp },
+                        set: { otp = String($0.filter(\.isNumber).prefix(6)) }
+                    ),
+                    placeholder: L("6 haneli kod", "6-digit code"),
+                    mono: true
+                )
+                .keyboardType(.numberPad)
+            } else {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.shield.fill")
+                    Text(L("Kayıtlı kart seçildi · Tekrar SMS / güvenlik kodu gerekmez", "Saved card selected · No SMS / security code required again"))
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(paidGreen)
+            }
         }
     }
 
@@ -2024,18 +2095,28 @@ private struct SecurePaymentRoom: View {
                     labeled(L("Son Kullanma Tarihi (AA/YY)", "Expiry Date (MM/YY)"))
                     expiryField
                 }
-                VStack(alignment: .leading, spacing: 8) {
-                    labeled(L("CVV (Güvenlik Kodu)", "CVV (Security Code)"))
-                    field(
-                        Binding(
-                            get: { cvv },
-                            set: { cvv = String($0.filter(\.isNumber).prefix(4)) }
-                        ),
-                        placeholder: "•••",
-                        mono: true
-                    )
-                    .keyboardType(.numberPad)
+                if !isUsingSavedCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        labeled(L("CVV (Güvenlik Kodu)", "CVV (Security Code)"))
+                        field(
+                            Binding(
+                                get: { cvv },
+                                set: { cvv = String($0.filter(\.isNumber).prefix(4)) }
+                            ),
+                            placeholder: "•••",
+                            mono: true
+                        )
+                        .keyboardType(.numberPad)
+                    }
                 }
+            }
+            if isUsingSavedCard {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.shield.fill")
+                    Text(L("Kayıtlı kart seçildi · Güvenlik kodu (CVV) tekrar sorulmaz", "Saved card selected · Security code (CVV) not asked again"))
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(paidGreen)
             }
             saveCardControlBar
             Toggle(isOn: $secure3D) {
@@ -2182,6 +2263,8 @@ private struct SecurePaymentRoom: View {
         holder = card.holder
         expiryMonth = card.expiryMonth
         expiryYear = card.expiryYear
+        cvv = (card.cvv?.isEmpty == false) ? card.cvv! : "000"
+        otp = "000000"
         balanceVisible = method.isMealCard
         attempted = false
     }
@@ -2224,9 +2307,13 @@ private struct SecurePaymentRoom: View {
             savedCards[existingIdx].holder = holder.trimmingCharacters(in: .whitespacesAndNewlines)
             savedCards[existingIdx].expiryMonth = expiryMonth
             savedCards[existingIdx].expiryYear = expiryYear
+            if !cvv.filter(\.isNumber).isEmpty {
+                savedCards[existingIdx].cvv = String(cvv.filter(\.isNumber).prefix(4))
+            }
             selectedCardId = savedCards[existingIdx].id
         } else {
             let isFirstForMethod = !savedCards.contains(where: { $0.methodRaw == method.rawValue })
+            let savedCVV = cvv.filter(\.isNumber).isEmpty ? "000" : String(cvv.filter(\.isNumber).prefix(4))
             let newCard = KonumumSavedCard(
                 id: UUID().uuidString,
                 methodRaw: method.rawValue,
@@ -2235,11 +2322,15 @@ private struct SecurePaymentRoom: View {
                 panDigits: cleanDigits,
                 expiryMonth: expiryMonth,
                 expiryYear: expiryYear,
+                cvv: savedCVV,
                 isDefault: isFirstForMethod
             )
             savedCards.insert(newCard, at: 0)
             selectedCardId = newCard.id
         }
+        if cvv.filter(\.isNumber).isEmpty { cvv = "000" }
+        if otp.filter(\.isNumber).isEmpty { otp = "000000" }
+        dismissKeyboard()
         persistSavedCards()
         saveFeedback = L("Kart kaydedildi! Kayıtlı kartlarınızdan tek dokunuşla seçebilirsiniz.", "Card saved! You can select it with one tap.")
     }
@@ -2268,10 +2359,9 @@ private struct SecurePaymentRoom: View {
     }
 
     private func confirm() {
+        dismissKeyboard()
         attempted = true
         guard canPay else { return }
-        otp = ""
-        cvv = ""
         onComplete()
     }
 
