@@ -136,7 +136,7 @@ const STAFF_TITLE = {
   kasiyer: "Kasiyer / Cam Teslim"
 };
 let staffPick = "yonetici";
-const COMMISSION = 0.12;
+const COMMISSION = 0.10;
 const CATS = ["Ana yemek", "Yan", "İçecek"];
 const BUSY_CYCLE = ["low", "mid", "high"];
 const BUSY_LABEL = { low: "Düşük", mid: "Normal", high: "Yoğun" };
@@ -2342,7 +2342,7 @@ function renderHq() {
           </div>
           <div style="text-align:right">
             <span class="note">${row.count} Sipariş · Brüt ₺${row.gmv}</span><br/>
-            <b style="color:#38F27A">Komisyon (%12): ₺${row.fee}</b> · <span style="color:#FFD129;font-weight:700">Restoran Net: ₺${row.net}</span>
+            <b style="color:#38F27A">Komisyon (%${Math.round(COMMISSION * 100)}): ₺${row.fee}</b> · <span style="color:#FFD129;font-weight:700">Restoran Net: ₺${row.net}</span>
             <span style="margin-left:8px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;background:${hasBilling ? "rgba(56,242,122,.15)" : "rgba(255,209,41,.15)"};color:${hasBilling ? "#38F27A" : "#FFD129"}">${hasBilling ? "✓ Fatura/IBAN Hazır" : "⏳ VKN/IBAN Bekleniyor"}</span>
           </div>
         </div>`;
