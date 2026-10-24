@@ -1,0 +1,891 @@
+{
+  "product": "konumumyemek.com",
+  "city": "Samsun",
+  "theme": {
+    "graphite": "#0B0F19",
+    "neon": "#3AF1D7",
+    "danger": "#FF7A73",
+    "pickupGreen": "#38F27A"
+  },
+  "approach": {
+    "startMeters": 140,
+    "startSeconds": 45
+  },
+  "demo": {
+    "customer": {
+      "email": "musteri@konumumyemek.com",
+      "password": "konumum55",
+      "name": "Ahmet Yılmaz",
+      "phone": "0532 100 55 00",
+      "plate": "34 KNM 55"
+    },
+    "restaurant": {
+      "email": "mcd@konumumyemek.com",
+      "bayi": "SAMSUN-01",
+      "password": "mutfak55"
+    }
+  },
+  "restaurants": [
+    {
+      "id": "mcd-samsun",
+      "bayiKodu": "SAMSUN-01",
+      "brandName": "McDonald's",
+      "branchTitle": "McDonald's - Bulvar/Samsun Şubesi",
+      "officialTitle": "McDonald's Restoranları Gıda Ticaret A.Ş. Samsun Şubesi",
+      "email": "mcd@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 01",
+      "taxNumber": "1234567890",
+      "address": "Atatürk Bulvarı No:18 İlkadım / Samsun",
+      "iban": "TR33 0006 1005 1978 6457 8413 26",
+      "mapLatitude": 41.2867,
+      "mapLongitude": 36.33,
+      "menu": [
+        {
+          "id": "mcd-bigmac",
+          "name": "Big Mac",
+          "price": 215,
+          "photo": "🍔",
+          "photoBg": "#7a2410",
+          "kcal": 563,
+          "allergens": [
+            "Gluten",
+            "Süt",
+            "Susam"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 55
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "mcd-mcchicken",
+          "name": "McChicken",
+          "price": 165,
+          "photo": "🍗",
+          "photoBg": "#8a4a12",
+          "kcal": 427,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 55
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "mcd-fries",
+          "name": "Patates Kızartması",
+          "price": 75,
+          "photo": "🍟",
+          "photoBg": "#c47a12",
+          "kcal": 337,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "kucuk",
+              "name": "Küçük",
+              "priceDelta": 0
+            },
+            {
+              "id": "orta",
+              "name": "Orta",
+              "priceDelta": 12
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 24
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "mcd-cola",
+          "name": "Coca-Cola",
+          "price": 55,
+          "photo": "🥤",
+          "photoBg": "#121a3a",
+          "kcal": 170,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "kucuk",
+              "name": "Küçük",
+              "priceDelta": 0
+            },
+            {
+              "id": "orta",
+              "name": "Orta",
+              "priceDelta": 8
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 16
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Burger",
+      "hours": "08:00-02:00",
+      "rating": 4.6,
+      "ratingCount": 2340,
+      "logoMark": "M",
+      "logoBg": "#dc1420",
+      "logoFg": "#ffc70a"
+    },
+    {
+      "id": "bk-samsun",
+      "bayiKodu": "SAMSUN-02",
+      "brandName": "Burger King",
+      "branchTitle": "Burger King - Piazza/Samsun Şubesi",
+      "officialTitle": "Burger King Restoranları Piazza Samsun Şubesi",
+      "email": "bk@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 02",
+      "taxNumber": "2234567890",
+      "address": "Piazza AVM, Atakum / Samsun",
+      "iban": "TR44 0006 1005 1978 6457 8413 27",
+      "mapLatitude": 41.322,
+      "mapLongitude": 36.291,
+      "menu": [
+        {
+          "id": "bk-whopper",
+          "name": "Whopper",
+          "price": 230,
+          "photo": "🍔",
+          "photoBg": "#6b140f",
+          "kcal": 677,
+          "allergens": [
+            "Gluten",
+            "Süt",
+            "Susam"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 60
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "bk-chicken",
+          "name": "King Chicken",
+          "price": 175,
+          "photo": "🍗",
+          "photoBg": "#8a4a12",
+          "kcal": 450,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 60
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "bk-rings",
+          "name": "Soğan Halkası",
+          "price": 70,
+          "photo": "🧅",
+          "photoBg": "#b86818",
+          "kcal": 320,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 20
+            }
+          ],
+          "soldOut": true
+        },
+        {
+          "id": "bk-shake",
+          "name": "Milkshake",
+          "price": 85,
+          "photo": "🥛",
+          "photoBg": "#3a2a1a",
+          "kcal": 410,
+          "allergens": [
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 18
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Burger",
+      "hours": "10:00-00:00",
+      "rating": 4.4,
+      "ratingCount": 1890,
+      "logoMark": "BK",
+      "logoBg": "#d61c24",
+      "logoFg": "#ffffff"
+    },
+    {
+      "id": "kfc-samsun",
+      "bayiKodu": "SAMSUN-03",
+      "brandName": "KFC",
+      "branchTitle": "KFC - Atakum/Samsun Şubesi",
+      "officialTitle": "KFC Atakum Gıda Ticaret Ltd. Şti.",
+      "email": "kfc@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 03",
+      "taxNumber": "3234567890",
+      "address": "Atatürk Bulvarı Atakum / Samsun",
+      "iban": "TR55 0006 1005 1978 6457 8413 28",
+      "mapLatitude": 41.3305,
+      "mapLongitude": 36.2864,
+      "menu": [
+        {
+          "id": "kfc-wings",
+          "name": "Hot Wings",
+          "price": 195,
+          "photo": "🍗",
+          "photoBg": "#8b1018",
+          "kcal": 480,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "6li",
+              "name": "6'lı",
+              "priceDelta": 0
+            },
+            {
+              "id": "8li",
+              "name": "8'li",
+              "priceDelta": 35
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "kfc-zinger",
+          "name": "Zinger Burger",
+          "price": 180,
+          "photo": "🍔",
+          "photoBg": "#7a1018",
+          "kcal": 530,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 55
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "kfc-colonel",
+          "name": "Colonel Burger",
+          "price": 170,
+          "photo": "🍔",
+          "photoBg": "#5a0c12",
+          "kcal": 510,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "menu",
+              "name": "Menü",
+              "priceDelta": 55
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "kfc-fries",
+          "name": "Patates",
+          "price": 70,
+          "photo": "🍟",
+          "photoBg": "#c47a12",
+          "kcal": 290,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "kucuk",
+              "name": "Küçük",
+              "priceDelta": 0
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 18
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Tavuk",
+      "hours": "10:00-23:00",
+      "rating": 4.5,
+      "ratingCount": 1560,
+      "logoMark": "KFC",
+      "logoBg": "#e3002b",
+      "logoFg": "#ffffff"
+    },
+    {
+      "id": "yusuf-samsun",
+      "bayiKodu": "SAMSUN-04",
+      "brandName": "Köfteci Yusuf",
+      "branchTitle": "Köfteci Yusuf - İlkadım/Samsun Şubesi",
+      "officialTitle": "Köfteci Yusuf İlkadım Şubesi",
+      "email": "yusuf@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 04",
+      "taxNumber": "4234567890",
+      "address": "İstiklal Caddesi İlkadım / Samsun",
+      "iban": "TR66 0006 1005 1978 6457 8413 29",
+      "mapLatitude": 41.286,
+      "mapLongitude": 36.336,
+      "menu": [
+        {
+          "id": "yusuf-izgara",
+          "name": "Izgara Köfte",
+          "price": 240,
+          "photo": "🥩",
+          "photoBg": "#5a1212",
+          "kcal": 620,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "porsiyon",
+              "name": "Porsiyon",
+              "priceDelta": 0
+            },
+            {
+              "id": "1.5",
+              "name": "1.5 Porsiyon",
+              "priceDelta": 70
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "yusuf-cay",
+          "name": "Çay",
+          "price": 20,
+          "photo": "🍵",
+          "photoBg": "#1f3a18",
+          "kcal": 4,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "yusuf-termos",
+          "name": "Termosumu Kendim Uzatıcam",
+          "price": 45,
+          "photo": "🫖",
+          "photoBg": "#2a2418",
+          "kcal": 8,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Köfte",
+      "hours": "10:00-22:00",
+      "rating": 4.7,
+      "ratingCount": 980,
+      "logoMark": "KY",
+      "logoBg": "#8c121a",
+      "logoFg": "#ffffff"
+    },
+    {
+      "id": "adiyorem-samsun",
+      "bayiKodu": "SAMSUN-05",
+      "brandName": "Adıyörem Çiğ Köfte",
+      "branchTitle": "Adıyörem Çiğ Köfte - İlkadım/Samsun",
+      "officialTitle": "Adıyörem Çiğ Köfte İlkadım",
+      "email": "adiyorem@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 05",
+      "taxNumber": "5234567890",
+      "address": "Kale Mah. İlkadım / Samsun",
+      "iban": "TR77 0006 1005 1978 6457 8413 30",
+      "mapLatitude": 41.2922,
+      "mapLongitude": 36.3312,
+      "menu": [
+        {
+          "id": "adi-porsiyon",
+          "name": "Adıyörem Çiğ Köfte Porsiyon",
+          "price": 120,
+          "photo": "🥗",
+          "photoBg": "#4a1a0c",
+          "kcal": 380,
+          "allergens": [
+            "Gluten",
+            "Ceviz"
+          ],
+          "variations": [
+            {
+              "id": "kucuk",
+              "name": "Küçük",
+              "priceDelta": 0
+            },
+            {
+              "id": "orta",
+              "name": "Orta",
+              "priceDelta": 20
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 40
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "adi-cay",
+          "name": "Çay",
+          "price": 20,
+          "photo": "🍵",
+          "photoBg": "#1f3a18",
+          "kcal": 4,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "adi-termos",
+          "name": "Termosumu Kendim Uzatıcam",
+          "price": 45,
+          "photo": "🫖",
+          "photoBg": "#2a2418",
+          "kcal": 8,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Çiğ Köfte",
+      "hours": "10:00-22:00",
+      "rating": 4.5,
+      "ratingCount": 640,
+      "logoMark": "AÇ",
+      "logoBg": "#b81f1a",
+      "logoFg": "#ff9e2e"
+    },
+    {
+      "id": "calikusu-samsun",
+      "bayiKodu": "SAMSUN-06",
+      "brandName": "Çalıkuşu Döner",
+      "branchTitle": "Çalıkuşu Döner - Atakum/Samsun",
+      "officialTitle": "Çalıkuşu Döner Atakum",
+      "email": "calikusu@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 06",
+      "taxNumber": "6234567890",
+      "address": "Cumhuriyet Mah. Atakum / Samsun",
+      "iban": "TR88 0006 1005 1978 6457 8413 31",
+      "mapLatitude": 41.3278,
+      "mapLongitude": 36.2788,
+      "menu": [
+        {
+          "id": "cali-tavuk",
+          "name": "Tavuk Döner Dürüm",
+          "price": 140,
+          "photo": "🌯",
+          "photoBg": "#c45a12",
+          "kcal": 410,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "durum",
+              "name": "Dürüm",
+              "priceDelta": 0
+            },
+            {
+              "id": "porsiyon",
+              "name": "Porsiyon",
+              "priceDelta": 40
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "cali-cay",
+          "name": "Çay",
+          "price": 20,
+          "photo": "🍵",
+          "photoBg": "#1f3a18",
+          "kcal": 4,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "cali-termos",
+          "name": "Termosumu Kendim Uzatıcam",
+          "price": 45,
+          "photo": "🫖",
+          "photoBg": "#2a2418",
+          "kcal": 8,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Döner",
+      "hours": "11:00-23:00",
+      "rating": 4.3,
+      "ratingCount": 420,
+      "logoMark": "Ç",
+      "logoBg": "#c45a12",
+      "logoFg": "#ffffff"
+    },
+    {
+      "id": "haci-samsun",
+      "bayiKodu": "SAMSUN-07",
+      "brandName": "Hacı Döner",
+      "branchTitle": "Hacı Döner - Bulvar/Samsun",
+      "officialTitle": "Hacı Döner Bulvar Şubesi",
+      "email": "haci@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 07",
+      "taxNumber": "7234567890",
+      "address": "Atatürk Bulvarı İlkadım / Samsun",
+      "iban": "TR99 0006 1005 1978 6457 8413 32",
+      "mapLatitude": 41.2804,
+      "mapLongitude": 36.3348,
+      "menu": [
+        {
+          "id": "haci-durum",
+          "name": "Hacı Döner Dürüm",
+          "price": 130,
+          "photo": "🌯",
+          "photoBg": "#1f7a3a",
+          "kcal": 390,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            },
+            {
+              "id": "double",
+              "name": "Double",
+              "priceDelta": 35
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "haci-cay",
+          "name": "Çay",
+          "price": 20,
+          "photo": "🍵",
+          "photoBg": "#1f3a18",
+          "kcal": 4,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "haci-termos",
+          "name": "Termosumu Kendim Uzatıcam",
+          "price": 45,
+          "photo": "🫖",
+          "photoBg": "#2a2418",
+          "kcal": 8,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Döner",
+      "hours": "10:00-22:00",
+      "rating": 4.4,
+      "ratingCount": 510,
+      "logoMark": "HD",
+      "logoBg": "#1f7a3a",
+      "logoFg": "#ffffff"
+    },
+    {
+      "id": "pizza-samsun",
+      "bayiKodu": "SAMSUN-08",
+      "brandName": "Pizzacılar",
+      "branchTitle": "Pizzacılar - Piazza/Samsun",
+      "officialTitle": "Pizzacılar Piazza Samsun",
+      "email": "pizza@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 08",
+      "taxNumber": "8234567890",
+      "address": "Piazza AVM yeme-içme katı, Atakum / Samsun",
+      "iban": "TR11 0006 1005 1978 6457 8413 33",
+      "mapLatitude": 41.3196,
+      "mapLongitude": 36.2944,
+      "menu": [
+        {
+          "id": "piz-karisik",
+          "name": "Karışık Pizza",
+          "price": 280,
+          "photo": "🍕",
+          "photoBg": "#8a1c14",
+          "kcal": 780,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "orta",
+              "name": "Orta",
+              "priceDelta": 0
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 45
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "piz-margarita",
+          "name": "Margarita",
+          "price": 220,
+          "photo": "🍕",
+          "photoBg": "#b43c28",
+          "kcal": 640,
+          "allergens": [
+            "Gluten",
+            "Süt"
+          ],
+          "variations": [
+            {
+              "id": "orta",
+              "name": "Orta",
+              "priceDelta": 0
+            },
+            {
+              "id": "buyuk",
+              "name": "Büyük",
+              "priceDelta": 40
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Pizza",
+      "hours": "12:00-02:00",
+      "rating": 4.2,
+      "ratingCount": 380,
+      "logoMark": "P",
+      "logoBg": "#e23c3c",
+      "logoFg": "#ffd54a"
+    },
+    {
+      "id": "simit-samsun",
+      "bayiKodu": "SAMSUN-09",
+      "brandName": "Simitçiler",
+      "branchTitle": "Simitçiler - Çarşı/Samsun",
+      "officialTitle": "Simitçiler Çarşı Samsun",
+      "email": "simit@konumumyemek.com",
+      "password": "mutfak55",
+      "phone": "0362 000 00 09",
+      "taxNumber": "9234567890",
+      "address": "Çarşı Mah. İlkadım / Samsun",
+      "iban": "TR22 0006 1005 1978 6457 8413 34",
+      "mapLatitude": 41.2888,
+      "mapLongitude": 36.3402,
+      "menu": [
+        {
+          "id": "sim-sade",
+          "name": "Sade Simit",
+          "price": 25,
+          "photo": "🥯",
+          "photoBg": "#b8862b",
+          "kcal": 250,
+          "allergens": [
+            "Gluten"
+          ],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "sim-cay",
+          "name": "Çay",
+          "price": 20,
+          "photo": "🍵",
+          "photoBg": "#1f3a18",
+          "kcal": 4,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        },
+        {
+          "id": "sim-termos",
+          "name": "Termosumu Kendim Uzatıcam",
+          "price": 45,
+          "photo": "🫖",
+          "photoBg": "#2a2418",
+          "kcal": 8,
+          "allergens": [],
+          "variations": [
+            {
+              "id": "std",
+              "name": "Standart",
+              "priceDelta": 0
+            }
+          ],
+          "soldOut": false
+        }
+      ],
+      "cuisine": "Fırın",
+      "hours": "06:30-21:00",
+      "rating": 4.8,
+      "ratingCount": 2100,
+      "logoMark": "S",
+      "logoBg": "#b8862b",
+      "logoFg": "#ffffff"
+    }
+  ]
+}
