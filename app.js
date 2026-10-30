@@ -136,7 +136,7 @@ const STAFF_TITLE = {
   kasiyer: "Kasiyer / Cam Teslim"
 };
 let staffPick = "yonetici";
-const COMMISSION = 0.10;
+const COMMISSION = 0.12;
 const CATS = ["Ana yemek", "Yan", "İçecek"];
 const BUSY_CYCLE = ["low", "mid", "high"];
 const BUSY_LABEL = { low: "Düşük", mid: "Normal", high: "Yoğun" };
