@@ -466,6 +466,18 @@ canvas {
   color: var(--muted);
   font-weight: 800;
 }
+.site-copy {
+  position: fixed;
+  left: 22px;
+  bottom: 18px;
+  z-index: 20;
+  max-width: 360px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255,255,255,.42);
+  pointer-events: none;
+}
 .legend span { margin-right: 14px; font-size: 12px; font-weight: 700; }
 .g { color: var(--green); }
 .y { color: var(--yellow); }
@@ -793,7 +805,13 @@ body.shop .pay-row .chip { flex: 1 1 42%; }
   .company-legal-page {
     position: static;
     max-width: none;
-    margin: 0 14px 28px;
+    margin: 0 14px 12px;
+  }
+  .site-copy {
+    position: static;
+    max-width: none;
+    margin: 0 14px 24px;
+    pointer-events: auto;
   }
   .chrome { display: none; }
   .bar { padding-right: 16px; }

@@ -1012,6 +1012,7 @@ function enter(persistSession, user = session) {
   $("brandMark")?.classList.add("hidden");
   $("partnerHero")?.classList.add("hidden");
   $("companyLegal")?.classList.add("hidden");
+  $("siteCopy")?.classList.add("hidden");
   $("app").classList.remove("hidden");
   paintShell();
   updateHeaderWho();
@@ -1042,6 +1043,7 @@ function doLogout() {
   $("brandMark")?.classList.remove("hidden");
   $("partnerHero")?.classList.remove("hidden");
   $("companyLegal")?.classList.remove("hidden");
+  $("siteCopy")?.classList.remove("hidden");
   paintShell();
 }
 
