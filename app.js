@@ -1009,6 +1009,7 @@ function enter(persistSession, user = session) {
   if (session.superAdmin) session.staffRole = "yonetici";
   if (persistSession) storeSession();
   $("loginCard").classList.add("hidden");
+  $("brandMark")?.classList.add("hidden");
   $("partnerHero")?.classList.add("hidden");
   $("companyLegal")?.classList.add("hidden");
   $("app").classList.remove("hidden");
@@ -1038,6 +1039,7 @@ function doLogout() {
   resetAuthForms();
   $("app").classList.add("hidden");
   $("loginCard").classList.remove("hidden");
+  $("brandMark")?.classList.remove("hidden");
   $("partnerHero")?.classList.remove("hidden");
   $("companyLegal")?.classList.remove("hidden");
   paintShell();

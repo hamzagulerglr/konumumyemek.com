@@ -363,6 +363,28 @@ canvas {
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .note { color: var(--muted); font-size: 13px; }
+.brand-mark {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 25;
+  width: 96px;
+  height: 96px;
+  border-radius: 26px;
+  overflow: hidden;
+  line-height: 0;
+  box-shadow: 0 12px 32px rgba(0,0,0,.32);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.brand-mark img {
+  width: 96px;
+  height: 96px;
+  display: block;
+}
+.brand-mark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0,0,0,.4);
+}
 .partner-hero {
   max-width: 640px;
   margin: 28px auto 0;
@@ -757,6 +779,17 @@ body.shop .pay-row .chip { flex: 1 1 42%; }
 @media (max-width: 900px) {
   .board, .grid2, .kds-layout, .kds-cols { grid-template-columns: 1fr; }
   .login-grid { margin: 20px 14px 12px; max-width: none; }
+  .brand-mark {
+    position: relative;
+    top: auto;
+    left: auto;
+    display: block;
+    width: 72px;
+    height: 72px;
+    margin: 18px auto 0;
+    border-radius: 20px;
+  }
+  .brand-mark img { width: 72px; height: 72px; }
   .company-legal-page {
     position: static;
     max-width: none;
