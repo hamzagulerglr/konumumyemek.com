@@ -293,7 +293,7 @@ h1 {
 }
 .login-grid {
   max-width: 520px;
-  margin: 40px auto;
+  margin: 18px auto 28px;
 }
 label {
   display: block;
@@ -363,6 +363,87 @@ canvas {
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .note { color: var(--muted); font-size: 13px; }
+.partner-hero {
+  max-width: 640px;
+  margin: 28px auto 0;
+  padding: 0 14px 4px;
+}
+.partner-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  font-weight: 800;
+  color: var(--neon);
+}
+.partner-hero h1.partner-title {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 8px 0 12px;
+  text-shadow: none;
+}
+.partner-lead {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255,255,255,.88);
+}
+.partner-points {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.partner-points > div {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(58,241,215,.22);
+  background: rgba(255,255,255,.03);
+}
+.partner-points b { display: block; color: #fff; margin: 4px 0; }
+.partner-points p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.45; }
+.partner-points span {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  font-weight: 800;
+  color: var(--neon);
+}
+@media (min-width: 700px) {
+  .partner-points { grid-template-columns: 1fr 1fr 1fr; }
+}
+.company-legal-page {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  z-index: 20;
+  max-width: 300px;
+  margin: 0;
+  padding: 0;
+}
+.company-legal {
+  padding: 12px 14px 11px;
+  border-radius: 14px;
+  background: rgba(11, 15, 25, .94);
+  border: 1px solid rgba(58,241,215,.32);
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255,255,255,.82);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+}
+.company-legal > b {
+  color: var(--neon);
+  font-size: 12.5px;
+  display: block;
+  margin: 2px 0 7px;
+}
+.company-legal p { margin: 0 0 6px; }
+.company-legal p:last-child { margin: 0; }
+.company-k {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.1px;
+  color: var(--muted);
+  font-weight: 800;
+}
 .legend span { margin-right: 14px; font-size: 12px; font-weight: 700; }
 .g { color: var(--green); }
 .y { color: var(--yellow); }
@@ -675,7 +756,12 @@ body.shop .pay-row .chip { flex: 1 1 42%; }
 }
 @media (max-width: 900px) {
   .board, .grid2, .kds-layout, .kds-cols { grid-template-columns: 1fr; }
-  .login-grid { margin: 20px 14px; max-width: none; }
+  .login-grid { margin: 20px 14px 12px; max-width: none; }
+  .company-legal-page {
+    position: static;
+    max-width: none;
+    margin: 0 14px 28px;
+  }
   .chrome { display: none; }
   .bar { padding-right: 16px; }
   .venue-grid { grid-template-columns: 1fr; }

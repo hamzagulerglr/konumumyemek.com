@@ -1009,6 +1009,8 @@ function enter(persistSession, user = session) {
   if (session.superAdmin) session.staffRole = "yonetici";
   if (persistSession) storeSession();
   $("loginCard").classList.add("hidden");
+  $("partnerHero")?.classList.add("hidden");
+  $("companyLegal")?.classList.add("hidden");
   $("app").classList.remove("hidden");
   paintShell();
   updateHeaderWho();
@@ -1036,6 +1038,8 @@ function doLogout() {
   resetAuthForms();
   $("app").classList.add("hidden");
   $("loginCard").classList.remove("hidden");
+  $("partnerHero")?.classList.remove("hidden");
+  $("companyLegal")?.classList.remove("hidden");
   paintShell();
 }
 
@@ -2407,6 +2411,7 @@ function renderLegal() {
   $("legalPane").innerHTML = `<div class="card legal">
     <h2>Restoran Üye İşyeri Sözleşmesi, Hakediş/IBAN ve KVKK Yasal Standartları</h2>
     <p class="note">konumumyemek.com tersine araç takip ve araç camından teslim (Drive-Thru / Curbside) platformu resmi hukuki metinleri.</p>
+    <p><b>Veri sorumlusu ve aracı hizmet sağlayıcı:</b> Geomind Bilişim ve Yapay Zeka Teknolojileri Anonim Şirketi (VKN 3941446454), Adalet Mah. Piri Reis Cad. Yapım Sitesi A Blok No: 4 İç Kapı No: 7 İlkadım / Samsun. Marka: Konumum Yemek. İletişim: info@konumumyemek.com · +90 506 831 30 44.</p>
 
     <div style="margin:12px 0 16px 0;padding:12px 14px;border-radius:12px;background:rgba(58,241,215,.06);border:1px solid rgba(58,241,215,.3);font-size:12px;line-height:1.6">
       <b style="color:var(--neon)">Aktif Üye İşyeri Kayıt Özeti:</b><br/>
@@ -2416,10 +2421,10 @@ function renderLegal() {
     </div>
 
     <h3>1. 6698 Sayılı KVKK Aydınlatma Metni ve Veri İşleyen / Veri Sorumlusu Protokolü</h3>
-    <p>Müşterinin mobil uygulamadan verdiği siparişlerde <b>araç plakası</b>, <b>ad-soyad/iletişim bilgisi</b> ve <b>canlı GPS yaklaşım mesafesi (metre / tahmini varış süresi)</b>, 6698 sayılı Kişisel Verilerin Korunması Kanunu m.5/2-c ("bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması") hukuki sebebine dayanarak yalnızca siparişin zamanında hazırlanması ve araç camından doğru araca teslim edilmesi amacıyla mutfak ekranında (KDS) gösterilir. Sipariş <b>"Camdan Teslim"</b> veya <b>"İptal"</b> statüsüne geçtiği anda canlı konum akışı otomatik olarak kesilir. Üye işyeri, plaka ve müşteri verilerini üçüncü kişilerle paylaşamaz veya pazarlama amacıyla kullanamaz.</p>
+    <p><b>Veri sorumlusu</b>, Konumum Yemek platformunu işleten <b>Geomind Bilişim ve Yapay Zeka Teknolojileri Anonim Şirketi</b>’dir. Üye restoran, mutfak ekranında (KDS) gördüğü plaka, ad-soyad ve yaklaşım verisi bakımından <b>veri işleyen</b> konumundadır. Müşterinin mobil uygulamadan verdiği siparişlerde <b>araç plakası</b>, <b>ad-soyad/iletişim bilgisi</b> ve <b>canlı GPS yaklaşım mesafesi</b>, 6698 sayılı KVKK m.5/2-c ("bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması") hukuki sebebine dayanarak yalnızca siparişin zamanında hazırlanması ve araç camından doğru araca teslim edilmesi için işlenir. Sipariş <b>"Camdan Teslim"</b> veya <b>"İptal"</b> olunca canlı konum akışı kesilir. Üye işyeri bu verileri üçüncü kişilerle paylaşamaz veya pazarlama amacıyla kullanamaz.</p>
 
     <h3>2. 6563 Sayılı ETK Kapsamında Aracı Hizmet Sağlayıcı &amp; Üye İşyeri Sözleşmesi</h3>
-    <p><b>konumumyemek.com</b>, 6563 sayılı Elektronik Ticaretin Düzenlenmesi Hakkında Kanun kapsamında "Aracı Hizmet Sağlayıcı" sıfatıyla hareket eder. Üye İşyeri (Restoran), platformda satışa sunduğu gıda ve içecek ürünlerinin fiyat, içerik, gramaj bilgilerinin doğruluğundan, e-Arşiv / ÖKC fiş düzenleme yükümlülüğünden ve 213 sayılı Vergi Usul Kanunu uyarınca vergisel sorumluluklardan bizzat sorumludur.</p>
+    <p><b>Geomind Bilişim ve Yapay Zeka Teknolojileri Anonim Şirketi</b> (marka: Konumum Yemek / konumumyemek.com), 6563 sayılı Elektronik Ticaretin Düzenlenmesi Hakkında Kanun kapsamında "Aracı Hizmet Sağlayıcı" sıfatıyla hareket eder. Üye İşyeri (Restoran), platformda satışa sunduğu gıda ve içecek ürünlerinin fiyat, içerik, gramaj bilgilerinin doğruluğundan, e-Arşiv / ÖKC fiş düzenleme yükümlülüğünden ve 213 sayılı Vergi Usul Kanunu uyarınca vergisel sorumluluklardan bizzat sorumludur.</p>
 
     <h3>3. 6493 Sayılı Kanun, Komisyon Oranı (%${Math.round(COMMISSION * 100)}) ve TR IBAN Hakediş Mutabakatı</h3>
     <p>Mobil uygulama üzerinden Kredi / Banka Kartları (Visa, Mastercard, Troy) ve Yemek Kartları (Sodexo/Pluxee, Multinet, Setcard, Metropol Card, Ticket Edenred) ile tahsil edilen sipariş tutarlarından <b>%${Math.round(COMMISSION * 100)} platform hizmet komisyonu (KDV dahil)</b> düşüldükten sonra kalan <b>Net Restoran Hakedişi</b>, Üye İşyerinin bildirdiği 26 haneli <b>TR IBAN</b> hesabına aktarılır. MASAK ve 6493 sayılı Ödeme Hizmetleri Kanunu gereğince IBAN alıcı ünvanı ile kayıtlı Vergi Kimlik Numarası (VKN/TCKN) sahibi birebir aynı tüzel veya gerçek kişi olmak zorundadır.</p>
