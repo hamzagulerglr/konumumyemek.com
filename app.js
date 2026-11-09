@@ -2415,7 +2415,7 @@ function renderLegal() {
   $("legalPane").innerHTML = `<div class="card legal">
     <h2>Restoran Üye İşyeri Sözleşmesi, Hakediş/IBAN ve KVKK Yasal Standartları</h2>
     <p class="note">konumumyemek.com tersine araç takip ve araç camından teslim (Drive-Thru / Curbside) platformu resmi hukuki metinleri.</p>
-    <p><b>Veri sorumlusu ve aracı hizmet sağlayıcı:</b> Geomind Bilişim ve Yapay Zeka Teknolojileri Anonim Şirketi (VKN 3941446454), Adalet Mah. Piri Reis Cad. Yapım Sitesi A Blok No: 4 İç Kapı No: 7 İlkadım / Samsun. Marka: Konumum Yemek. İletişim: info@konumumyemek.com · +90 506 831 30 44.</p>
+    <p><b>Veri sorumlusu ve aracı hizmet sağlayıcı:</b> Geomind Bilişim ve Yapay Zeka Teknolojileri Anonim Şirketi (VKN 3941446454). Marka: Konumum Yemek. İletişim: info@konumumyemek.com</p>
 
     <div style="margin:12px 0 16px 0;padding:12px 14px;border-radius:12px;background:rgba(58,241,215,.06);border:1px solid rgba(58,241,215,.3);font-size:12px;line-height:1.6">
       <b style="color:var(--neon)">Aktif Üye İşyeri Kayıt Özeti:</b><br/>
